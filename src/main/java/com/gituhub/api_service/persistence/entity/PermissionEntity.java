@@ -23,7 +23,7 @@ public class PermissionEntity {
     @Enumerated(EnumType.STRING)
     private PermissionEnum permissionName;
 
-    @ManyToMany(mappedBy = "permissionEntities", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "permissionEntities", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     private Set<RoleEntity> roleEntities = new HashSet<>();
 
 }
