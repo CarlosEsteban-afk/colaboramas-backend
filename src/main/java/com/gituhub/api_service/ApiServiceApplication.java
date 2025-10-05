@@ -94,6 +94,7 @@ public class ApiServiceApplication {
 			// Users Test
 
 			UserEntity ACADEMICO_TEST = UserEntity.builder()
+					.name("academico test")
 					.username("academico_test@email.com")
 					.password(new BCryptPasswordEncoder().encode("123"))
 					.roleEntities(Set.of(ACADEMICO))
@@ -104,6 +105,7 @@ public class ApiServiceApplication {
 					.build();
 
 			UserEntity COMUNICADOR_TEST = UserEntity.builder()
+					.name("comunicador test")
 					.username("comunicador_test@email.com")
 					.password(new BCryptPasswordEncoder().encode("123"))
 					.roleEntities(Set.of(COMUNICADOR))
