@@ -27,7 +27,7 @@ public class UserEntity {
     @Column(nullable = false)
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "user_has_rol",
             joinColumns = @JoinColumn(name = "user_id"),
