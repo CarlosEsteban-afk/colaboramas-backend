@@ -19,13 +19,13 @@ public class UserEntity {
     private Long id;
 
     @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
     private String username; //email
 
     @Column(nullable = false)
     private String password;
-
-    @Column(nullable = false)
-    private String name;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
