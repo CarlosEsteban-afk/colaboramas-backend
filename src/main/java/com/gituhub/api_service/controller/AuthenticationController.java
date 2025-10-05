@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Claim;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
