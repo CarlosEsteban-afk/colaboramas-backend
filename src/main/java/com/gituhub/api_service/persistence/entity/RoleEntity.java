@@ -23,13 +23,13 @@ public class RoleEntity {
     @Enumerated(EnumType.STRING)
     private RoleEnum roleName;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "role_has_permission",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id"))
     private Set<PermissionEntity> permissionEntities = new HashSet<>();
 
-    @ManyToMany(mappedBy = "roleEntities", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "roleEntities", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     private Set<UserEntity> userEntities = new HashSet<>();
 }
