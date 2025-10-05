@@ -32,10 +32,15 @@ SPRING_DATASOURCE_PASSWORD=dbpass
 SPRING_JPA_HIBERNATE_DDL_AUTO=update
 SPRING_SECURITY_USER_NAME=admin
 SPRING_SECURITY_USER_PASSWORD=admin123
+SECURITY.JWT.USER.GENERATOR=AUTH0JWT-BACKEND
+SECURITY.JWT.KEY.PRIVATE=key
 ```
+
+Nota: La key para firmar JWT (SECURITY.JWT.KEY.PRIVATE=key) utiliza Algoritmo HS256, base 64, 32 bytes. 
+Es posible generar una key personalizada teniendo en cuenta estas características a través de herramientas online.
+
 ## Levantar la aplicación
 
 ```bash
 mvn spring-boot:run
 ```
-
