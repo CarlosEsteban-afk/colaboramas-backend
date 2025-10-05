@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.gituhub.api_service.persistence.entity.*;
-import com.gituhub.api_service.persistence.repository.UserRepository;
+import com.gituhub.api_service.persistence.repository.*;
 
 @SpringBootApplication
 public class ApiServiceApplication {
@@ -30,92 +30,93 @@ public class ApiServiceApplication {
 	}
 
 	@Bean
-	CommandLineRunner init(UserRepository userRepository){
+	CommandLineRunner init(UserRepository userRepository,
+						   RoleRepository roleRepository,
+						   PermissionRepository permissionRepository) {
 		return args -> {
 
-			// Permissions
+			List<PermissionEntity> permissions = List.of(
+					PermissionEntity.builder().permissionName(PermissionEnum.VER_RECOMENDACIONES).build(),
+					PermissionEntity.builder().permissionName(PermissionEnum.BUSCAR_USUARIO).build(),
+					PermissionEntity.builder().permissionName(PermissionEnum.CONTACTAR_USUARIO).build(),
+					PermissionEntity.builder().permissionName(PermissionEnum.VER_EVENTOS).build(),
+					PermissionEntity.builder().permissionName(PermissionEnum.AGREGAR_EVENTO).build(),
+					PermissionEntity.builder().permissionName(PermissionEnum.EDITAR_EVENTO).build(),
+					PermissionEntity.builder().permissionName(PermissionEnum.ELIMINAR_EVENTO).build(),
+					PermissionEntity.builder().permissionName(PermissionEnum.VER_PERFIL).build(),
+					PermissionEntity.builder().permissionName(PermissionEnum.EDITAR_PERFIL).build(),
+					PermissionEntity.builder().permissionName(PermissionEnum.ELIMINAR_PERFIL).build(),
+					PermissionEntity.builder().permissionName(PermissionEnum.VER_NOTIFICACIONES).build()
+			);
 
-			PermissionEntity VER_RECOMENDACIONES = PermissionEntity.builder()
-					.permissionName(PermissionEnum.VER_RECOMENDACIONES)
-					.build();
+			permissions.forEach(p ->
+					permissionRepository.findByPermissionName(p.getPermissionName())
+							.orElseGet(() -> permissionRepository.save(p))
+			);
 
-			PermissionEntity BUSCAR_USUARIO = PermissionEntity.builder()
-					.permissionName(PermissionEnum.BUSCAR_USUARIO)
-					.build();
-
-			PermissionEntity CONTACTAR_USUARIO = PermissionEntity.builder()
-					.permissionName(PermissionEnum.CONTACTAR_USUARIO)
-					.build();
-
-			PermissionEntity VER_EVENTOS = PermissionEntity.builder()
-					.permissionName(PermissionEnum.VER_EVENTOS)
-					.build();
-
-			PermissionEntity AGREGAR_EVENTO = PermissionEntity.builder()
-					.permissionName(PermissionEnum.AGREGAR_EVENTO)
-					.build();
-
-			PermissionEntity EDITAR_EVENTO = PermissionEntity.builder()
-					.permissionName(PermissionEnum.EDITAR_EVENTO)
-					.build();
-
-			PermissionEntity ELIMINAR_EVENTO = PermissionEntity.builder()
-					.permissionName(PermissionEnum.ELIMINAR_EVENTO)
-					.build();
-
-			PermissionEntity VER_PERFIL = PermissionEntity.builder()
-					.permissionName(PermissionEnum.VER_PERFIL)
-					.build();
-
-			PermissionEntity EDITAR_PERFIL = PermissionEntity.builder()
-					.permissionName(PermissionEnum.EDITAR_PERFIL)
-					.build();
-
-			PermissionEntity ELIMINAR_PERFIL = PermissionEntity.builder()
-					.permissionName(PermissionEnum.ELIMINAR_PERFIL)
-					.build();
-
-			PermissionEntity VER_NOTIFICACIONES = PermissionEntity.builder()
-					.permissionName(PermissionEnum.VER_NOTIFICACIONES)
-					.build();
-
-			// Roles
+			var VER_RECOMENDACIONES = permissionRepository.findByPermissionName(PermissionEnum.VER_RECOMENDACIONES).get();
+			var BUSCAR_USUARIO = permissionRepository.findByPermissionName(PermissionEnum.BUSCAR_USUARIO).get();
+			var CONTACTAR_USUARIO = permissionRepository.findByPermissionName(PermissionEnum.CONTACTAR_USUARIO).get();
+			var VER_EVENTOS = permissionRepository.findByPermissionName(PermissionEnum.VER_EVENTOS).get();
+			var AGREGAR_EVENTO = permissionRepository.findByPermissionName(PermissionEnum.AGREGAR_EVENTO).get();
+			var EDITAR_EVENTO = permissionRepository.findByPermissionName(PermissionEnum.EDITAR_EVENTO).get();
+			var ELIMINAR_EVENTO = permissionRepository.findByPermissionName(PermissionEnum.ELIMINAR_EVENTO).get();
+			var VER_PERFIL = permissionRepository.findByPermissionName(PermissionEnum.VER_PERFIL).get();
+			var EDITAR_PERFIL = permissionRepository.findByPermissionName(PermissionEnum.EDITAR_PERFIL).get();
+			var ELIMINAR_PERFIL = permissionRepository.findByPermissionName(PermissionEnum.ELIMINAR_PERFIL).get();
+			var VER_NOTIFICACIONES = permissionRepository.findByPermissionName(PermissionEnum.VER_NOTIFICACIONES).get();
 
 			RoleEntity ACADEMICO = RoleEntity.builder()
 					.roleName(RoleEnum.ACADEMICO)
-					.permissionEntities(Set.of(VER_RECOMENDACIONES, BUSCAR_USUARIO, CONTACTAR_USUARIO, VER_EVENTOS, AGREGAR_EVENTO, EDITAR_EVENTO, ELIMINAR_EVENTO, VER_PERFIL, EDITAR_PERFIL, ELIMINAR_PERFIL, VER_NOTIFICACIONES))
+					.permissionEntities(Set.of(
+							VER_RECOMENDACIONES, BUSCAR_USUARIO, CONTACTAR_USUARIO,
+							VER_EVENTOS, AGREGAR_EVENTO, EDITAR_EVENTO, ELIMINAR_EVENTO,
+							VER_PERFIL, EDITAR_PERFIL, ELIMINAR_PERFIL, VER_NOTIFICACIONES))
 					.build();
 
 			RoleEntity COMUNICADOR = RoleEntity.builder()
 					.roleName(RoleEnum.COMUNICADOR)
-					.permissionEntities(Set.of(VER_RECOMENDACIONES, BUSCAR_USUARIO, CONTACTAR_USUARIO, VER_PERFIL, EDITAR_PERFIL, ELIMINAR_PERFIL, VER_NOTIFICACIONES))
+					.permissionEntities(Set.of(
+							VER_RECOMENDACIONES, BUSCAR_USUARIO, CONTACTAR_USUARIO,
+							VER_PERFIL, EDITAR_PERFIL, ELIMINAR_PERFIL, VER_NOTIFICACIONES))
 					.build();
 
-			// Users Test
+			if (roleRepository.findByRoleName(RoleEnum.ACADEMICO).isEmpty()) {
+				roleRepository.save(ACADEMICO);
+			}
+			if (roleRepository.findByRoleName(RoleEnum.COMUNICADOR).isEmpty()) {
+				roleRepository.save(COMUNICADOR);
+			}
 
-			UserEntity ACADEMICO_TEST = UserEntity.builder()
-					.name("academico test")
-					.username("academico_test@email.com")
-					.password(new BCryptPasswordEncoder().encode("123"))
-					.roleEntities(Set.of(ACADEMICO))
-					.accountNonExpired(true)
-					.accountNonLocked(true)
-					.credentialsNonExpired(true)
-					.isEnabled(true)
-					.build();
+			var encoder = new BCryptPasswordEncoder();
 
-			UserEntity COMUNICADOR_TEST = UserEntity.builder()
-					.name("comunicador test")
-					.username("comunicador_test@email.com")
-					.password(new BCryptPasswordEncoder().encode("123"))
-					.roleEntities(Set.of(COMUNICADOR))
-					.accountNonExpired(true)
-					.accountNonLocked(true)
-					.credentialsNonExpired(true)
-					.isEnabled(true)
-					.build();
+			if (userRepository.findUserByUsername("academico_test@email.com").isEmpty()) {
+				UserEntity ACADEMICO_TEST = UserEntity.builder()
+						.name("academico test")
+						.username("academico_test@email.com")
+						.password(encoder.encode("123"))
+						.roleEntities(Set.of(roleRepository.findByRoleName(RoleEnum.ACADEMICO).get()))
+						.accountNonExpired(true)
+						.accountNonLocked(true)
+						.credentialsNonExpired(true)
+						.isEnabled(true)
+						.build();
+				userRepository.save(ACADEMICO_TEST);
+			}
 
-			userRepository.saveAll(List.of(ACADEMICO_TEST, COMUNICADOR_TEST));
+			if (userRepository.findUserByUsername("comunicador_test@email.com").isEmpty()) {
+				UserEntity COMUNICADOR_TEST = UserEntity.builder()
+						.name("comunicador test")
+						.username("comunicador_test@email.com")
+						.password(encoder.encode("123"))
+						.roleEntities(Set.of(roleRepository.findByRoleName(RoleEnum.COMUNICADOR).get()))
+						.accountNonExpired(true)
+						.accountNonLocked(true)
+						.credentialsNonExpired(true)
+						.isEnabled(true)
+						.build();
+				userRepository.save(COMUNICADOR_TEST);
+			}
 		};
 	}
 }
