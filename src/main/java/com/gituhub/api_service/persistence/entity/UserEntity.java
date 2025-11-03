@@ -18,31 +18,26 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private String username; //email
+    @Column(unique = true, nullable = false)
+    private String username;
 
     @Column(nullable = false)
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_has_rol",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<RoleEntity> roleEntities = new HashSet<>();
-
-    @Column(name = "account_non_expired")
-    private boolean accountNonExpired;
-
-    @Column(name = "account_non_locked")
-    private boolean accountNonLocked;
-
-    @Column(name = "credentials_non_expired")
-    private boolean credentialsNonExpired;
-
     @Column(name = "is_enabled")
     private boolean isEnabled;
+
+    @Column(name = "account_no_expired")
+    private boolean accountNoExpired;
+
+    @Column(name = "account_no_locked")
+    private boolean accountNoLocked;
+
+    @Column(name = "credential_no_expired")
+    private boolean credentialNoExpired;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @Builder.Default
+    private Set<RoleEntity> roles = new HashSet<>();
 }

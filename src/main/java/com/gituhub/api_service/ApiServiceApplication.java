@@ -92,31 +92,24 @@ public class ApiServiceApplication {
 
 			if (userRepository.findUserByUsername("academico_test@email.com").isEmpty()) {
 				UserEntity ACADEMICO_TEST = UserEntity.builder()
-						.name("academico test")
+						.username("academico test")
 						.username("academico_test@email.com")
 						.password(encoder.encode("123"))
-						.roleEntities(Set.of(roleRepository.findByRoleName(RoleEnum.ACADEMICO).get()))
-						.accountNonExpired(true)
-						.accountNonLocked(true)
-						.credentialsNonExpired(true)
-						.isEnabled(true)
+						.roles(Set.of(roleRepository.findByRoleName(RoleEnum.ACADEMICO).get()))
 						.build();
 				userRepository.save(ACADEMICO_TEST);
 			}
 
 			if (userRepository.findUserByUsername("comunicador_test@email.com").isEmpty()) {
 				UserEntity COMUNICADOR_TEST = UserEntity.builder()
-						.name("comunicador test")
+						.username("comunicador test")
 						.username("comunicador_test@email.com")
 						.password(encoder.encode("123"))
-						.roleEntities(Set.of(roleRepository.findByRoleName(RoleEnum.COMUNICADOR).get()))
-						.accountNonExpired(true)
-						.accountNonLocked(true)
-						.credentialsNonExpired(true)
-						.isEnabled(true)
+						.roles(Set.of(roleRepository.findByRoleName(RoleEnum.COMUNICADOR).get()))
 						.build();
 				userRepository.save(COMUNICADOR_TEST);
 			}
+		
 		};
 	}
 }

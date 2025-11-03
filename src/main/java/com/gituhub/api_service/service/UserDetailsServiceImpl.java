@@ -50,19 +50,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
 
-        userEntity.getRoleEntities()
+        userEntity.getRoles()
                 .forEach(role -> authorityList.add(new SimpleGrantedAuthority("ROLE_".concat(role.getRoleName().name()))));
 
-        userEntity.getRoleEntities().stream()
+        userEntity.getRoles().stream()
                 .flatMap(role -> role.getPermissionEntities().stream())
                 .forEach(permission -> authorityList.add(new SimpleGrantedAuthority(permission.getPermissionName().name())));
 
         return new User(userEntity.getUsername(),
                 userEntity.getPassword(),
-                userEntity.isEnabled(),
-                userEntity.isAccountNonExpired(),
-                userEntity.isCredentialsNonExpired(),
-                userEntity.isAccountNonLocked(),
                 authorityList);
     }
 
@@ -104,20 +100,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
 
         UserEntity userEntity = UserEntity.builder()
-                .name(name)
+                .username(name)
                 .username(username)
                 .password(passwordEncoder.encode(password))
-                .roleEntities(roleEntitySet)
-                .accountNonExpired(true)
-                .accountNonLocked(true)
-                .credentialsNonExpired(true)
+                .roles (roleEntitySet)
                 .isEnabled(true)
                 .build();
 
         UserEntity userCreated = userRepository.save(userEntity);
         ArrayList<SimpleGrantedAuthority> authorityList = new ArrayList<>();
-        userCreated.getRoleEntities().forEach(role -> authorityList.add(new SimpleGrantedAuthority("ROLE_".concat(role.getRoleName().name()))));
-        userCreated.getRoleEntities()
+        userCreated.getRoles().forEach(role -> authorityList.add(new SimpleGrantedAuthority("ROLE_".concat(role.getRoleName().name()))));
+        userCreated.getRoles()
                 .stream()
                 .flatMap(role -> role.getPermissionEntities().stream())
                 .forEach(permission -> authorityList.add(new SimpleGrantedAuthority(permission.getPermissionName().name())));
