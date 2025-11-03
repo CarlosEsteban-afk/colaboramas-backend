@@ -41,8 +41,8 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(http -> {
-                    http.requestMatchers(HttpMethod.POST, "/auth/log-in").permitAll();
-                    http.requestMatchers(HttpMethod.POST, "/auth/sign-up").permitAll();
+                    http.requestMatchers(HttpMethod.POST, "/auth/login").permitAll();
+                    http.requestMatchers(HttpMethod.POST, "/auth/register").permitAll();
                     http.requestMatchers(HttpMethod.POST, "/auth/validate-token").permitAll();
                     http.anyRequest().authenticated();
                 })

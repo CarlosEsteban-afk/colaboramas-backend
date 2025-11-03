@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @PostMapping
-   // @PreAuthorize("hasRole('ADMIN')") // solo admins pueden crear usuarios
+   // @PreAuthorize("hasRole('ADMIN')")
     public UserDTO createUser(@RequestBody CreateUserRequest request) {
         User user = userService.createUser(
                 request.name(),

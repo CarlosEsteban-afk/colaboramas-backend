@@ -3,27 +3,27 @@ package com.agora.auth.controller;
 import com.agora.auth.dto.AuthCreateUserRequest;
 import com.agora.auth.dto.AuthLoginRequest;
 import com.agora.auth.dto.AuthResponse;
-import com.agora.user.model.User;
+import com.agora.auth.service.AuthService;
 import com.agora.repository.UserRepository;
-import com.agora.auth.service.UserDetailsServiceImpl;
+import com.agora.user.model.User;
 import com.agora.util.JwtUtils;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auth0.jwt.interfaces.Claim;
+
 import java.util.*;
 
 @RestController
 @RequestMapping("/auth")
-//@CrossOrigin(origins = "http://localhost:5173")
-public class AuthenticationController {
+public class AuthController {
 
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private AuthService authService;
 
     @Autowired
     private JwtUtils jwtUtils;
@@ -31,14 +31,16 @@ public class AuthenticationController {
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping("/log-in")
-    public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthLoginRequest userRequest){
-        return new ResponseEntity<>(this.userDetailsService.loginUser(userRequest), HttpStatus.OK);
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthLoginRequest userRequest) {
+        AuthResponse response = authService.loginUser(userRequest);
+        return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/sign-up")
-    public ResponseEntity<AuthResponse> createUser(@RequestBody @Valid AuthCreateUserRequest authCreateUserRequest){
-        return new ResponseEntity<>(this.userDetailsService.createUser(authCreateUserRequest), HttpStatus.CREATED);
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponse> register(@RequestBody @Valid AuthCreateUserRequest request) {
+        AuthResponse response = authService.createUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/validate-token")
@@ -62,13 +64,14 @@ public class AuthenticationController {
             response.put("valid", true);
             response.put("username", username);
             response.put("authorities", Arrays.asList(authorities.split(",")));
+
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("valid", false);
-            response.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            Map<String, Object> error = new HashMap<>();
+            error.put("valid", false);
+            error.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         }
     }
 }
