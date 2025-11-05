@@ -21,7 +21,7 @@ public class UserController {
 
     @GetMapping
     public List<UserDTO> getAllUsers(){
-        return userService.getAllUsers().stream().map(u -> new UserDTO(u.getId(), u.getUsername(), u.getName()))
+        return userService.getAllUsers().stream().map(u -> new UserDTO(u.getId(), u.getUsername()))
                 .collect(Collectors.toList());
     }
 
@@ -29,12 +29,12 @@ public class UserController {
    // @PreAuthorize("hasRole('ADMIN')")
     public UserDTO createUser(@RequestBody CreateUserRequest request) {
         User user = userService.createUser(
-                request.name(),
                 request.username(),
+                request.email(),
                 request.password(),
                 request.roles()
         );
-        return new UserDTO(user.getId(), user.getUsername(), user.getName());
+        return new UserDTO(user.getId(), user.getUsername());
     }
 
 

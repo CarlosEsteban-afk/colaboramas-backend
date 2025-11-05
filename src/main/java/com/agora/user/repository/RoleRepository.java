@@ -1,4 +1,4 @@
-package com.agora.repository;
+package com.agora.user.repository;
 
 import com.agora.user.model.Role;
 import com.agora.user.model.RoleEnum;

@@ -31,6 +31,6 @@ public class Role {
             inverseJoinColumns = @JoinColumn(name = "permission_id"))
     private Set<PermissionEntity> permissionEntities = new HashSet<>();
 
-    @ManyToMany(mappedBy = "roleEntities", fetch = FetchType.EAGER)
-    private Set<User> userEntities = new HashSet<>();
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
+    private Set<User> users = new HashSet<>();
 }

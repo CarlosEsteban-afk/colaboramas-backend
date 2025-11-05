@@ -2,8 +2,8 @@ package com.agora.user.service;
 
 import com.agora.user.model.Role;
 import com.agora.user.model.RoleEnum;
-import com.agora.repository.RoleRepository;
-import com.agora.repository.UserRepository;
+import com.agora.user.repository.RoleRepository;
+import com.agora.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.agora.user.model.User;
@@ -24,12 +24,12 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User getUserByUsername(String username) {
-        return userRepository.findUserByUsername(username)
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public User createUser(String name, String username, String password, Set<RoleEnum> roles) {
+    public User createUser(String username,String email, String password, Set<RoleEnum> roles) {
         Set<Role> roleEntities = new HashSet<>(roleRepository.findRolesByRoleNameIn((List<RoleEnum>) roles));
 
         if (roleEntities.isEmpty()) {
@@ -37,13 +37,13 @@ public class UserService {
         }
 
         User user = User.builder()
-                .name(name)
                 .username(username)
+                .email(email)
                 .password(passwordEncoder.encode(password))
-                .roleEntities(roleEntities)
-                .accountNonExpired(true)
-                .accountNonLocked(true)
-                .credentialsNonExpired(true)
+                .roles(roleEntities)
+                .accountNoExpired(true)
+                .accountNoLocked(true)
+                .credentialNoExpired(true)
                 .isEnabled(true)
                 .build();
 

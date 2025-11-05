@@ -55,13 +55,13 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    @Bean
-    public AuthenticationProvider authenticationProvider(UserDetailsServiceImpl userDetailsServiceImpl) {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(passwordEncoder());
-        provider.setUserDetailsService(userDetailsServiceImpl);
-        return provider;
-    }
+    // @Bean
+    // public AuthenticationProvider authenticationProvider(UserDetailsServiceImpl userDetailsServiceImpl) {
+    //     DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+    //     provider.setPasswordEncoder(passwordEncoder());
+    //     provider.setUserDetailsService(userDetailsServiceImpl);
+    //     return provider;
+    // }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

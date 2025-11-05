@@ -4,7 +4,7 @@ import com.agora.auth.dto.AuthCreateUserRequest;
 import com.agora.auth.dto.AuthLoginRequest;
 import com.agora.auth.dto.AuthResponse;
 import com.agora.auth.service.AuthService;
-import com.agora.repository.UserRepository;
+import com.agora.user.repository.UserRepository;
 import com.agora.user.model.User;
 import com.agora.util.JwtUtils;
 import com.auth0.jwt.interfaces.Claim;
@@ -48,12 +48,12 @@ public class AuthController {
         try {
             String jwt = token.replace("Bearer ", "");
             DecodedJWT decodedJWT = jwtUtils.validateToken(jwt);
-            String username = jwtUtils.extractUsername(decodedJWT);
+            String email = jwtUtils.extractUsername(decodedJWT);
 
-            User user = userRepository.findUserByUsername(username)
+            User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-            if (!user.isEnabled()) {
+            if (!user.getIsEnabled()) {
                 throw new RuntimeException("User is disabled");
             }
 
@@ -62,7 +62,7 @@ public class AuthController {
 
             Map<String, Object> response = new HashMap<>();
             response.put("valid", true);
-            response.put("username", username);
+            response.put("email", email);
             response.put("authorities", Arrays.asList(authorities.split(",")));
 
             return ResponseEntity.ok(response);

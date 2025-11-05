@@ -6,8 +6,8 @@ import com.agora.user.model.RoleEnum;
 import java.util.Set;
 
 public record CreateUserRequest(
-        String name,
         String username,
+        String email,
         String password,
         Set<RoleEnum> roles
 ) {}

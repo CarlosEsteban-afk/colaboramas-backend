@@ -1,4 +1,4 @@
-package com.agora.repository;
+package com.agora.user.repository;
 
 import com.agora.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +8,8 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    Optional<User> findByEmail(String email);
 
     Optional<User> findUserByUsername(String username);
 

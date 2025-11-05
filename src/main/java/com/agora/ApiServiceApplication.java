@@ -6,8 +6,8 @@ import com.agora.persistence.PermissionEnum;
 import com.agora.user.model.Role;
 import com.agora.user.model.RoleEnum;
 import com.agora.repository.PermissionRepository;
-import com.agora.repository.RoleRepository;
-import com.agora.repository.UserRepository;
+import com.agora.user.repository.RoleRepository;
+import com.agora.user.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -99,22 +99,32 @@ public class ApiServiceApplication {
 
 			var encoder = new BCryptPasswordEncoder();
 
-			if (userRepository.findUserByUsername("academico_test@email.com").isEmpty()) {
+			if (userRepository.findByEmail("academico_test1@email.com").isEmpty()) {
 
 				User ACADEMICO_TEST = User.builder()
-						.username("academico_test@email.com")
+						.username("academico_test1")
+						.email("academico_test1@email.com")
 						.password(encoder.encode("123"))
 						.roles(Set.of(roleRepository.findByRoleName(RoleEnum.ACADEMICO).get()))
+						.isEnabled(true)
+						.accountNoExpired(true)
+						.accountNoLocked(true)
+						.credentialNoExpired(true)
 						.build();
 				userRepository.save(ACADEMICO_TEST);
 			}
 
-			if (userRepository.findUserByUsername("comunicador_test@email.com").isEmpty()) {
+			if (userRepository.findByEmail("comunicador_test1@email.com").isEmpty()) {
 
 				User COMUNICADOR_TEST = User.builder()
-						.username("comunicador_test@email.com")
+						.username("comunicador_test1")
+						.email("comunicador_test1@email.com")
 						.password(encoder.encode("123"))
 						.roles(Set.of(roleRepository.findByRoleName(RoleEnum.COMUNICADOR).get()))
+						.isEnabled(true)
+						.accountNoExpired(true)
+						.accountNoLocked(true)
+						.credentialNoExpired(true)
 						.build();
 				userRepository.save(COMUNICADOR_TEST);
 			}

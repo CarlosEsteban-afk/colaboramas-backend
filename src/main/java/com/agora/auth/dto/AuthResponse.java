@@ -2,5 +2,5 @@ package com.agora.auth.dto;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({"username", "message", "jwt", "status"})
-public record AuthResponse(String username, String message, String jwt, boolean status) {}
+@JsonPropertyOrder({"email", "message", "jwt", "status"})
+public record AuthResponse(String email, String message, String jwt, boolean status) {}

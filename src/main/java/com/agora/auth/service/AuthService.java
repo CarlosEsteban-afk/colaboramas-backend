@@ -3,13 +3,14 @@ package com.agora.auth.service;
 import com.agora.auth.dto.AuthCreateUserRequest;
 import com.agora.auth.dto.AuthLoginRequest;
 import com.agora.auth.dto.AuthResponse;
-import com.agora.repository.RoleRepository;
-import com.agora.repository.UserRepository;
+import com.agora.user.repository.RoleRepository;
+import com.agora.user.repository.UserRepository;
 import com.agora.user.model.Role;
 import com.agora.user.model.RoleEnum;
 import com.agora.user.model.User;
 import com.agora.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,10 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 @Service
 public class AuthService {
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -38,22 +40,21 @@ public class AuthService {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
-
     public AuthResponse loginUser(AuthLoginRequest request) {
-        String username = request.username();
+        String email = request.email();
         String password = request.password();
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        if (passwordEncoder.matches(password, userDetails.getPassword())) {
-            throw new BadCredentialsException("Bad credentials");
-        }
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(username, userDetails.getPassword(), userDetails.getAuthorities());
+        Authentication authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), password);
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtUtils.createToken(authentication);
-        return new AuthResponse(username, "User logged successfully", token, true);
-    }
 
+        String token = jwtUtils.createToken(authentication);
+        return new AuthResponse(email, "User logged successfully", token, true);
+    }
 
     public AuthResponse createUser(AuthCreateUserRequest request) {
         List<RoleEnum> roleEnums = request.roleRequest().roleListName()
@@ -67,24 +68,27 @@ public class AuthService {
         }
 
         User user = User.builder()
-                .name(request.name())
                 .username(request.username())
+                .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
-                .roleEntities(roles)
-                .accountNonExpired(true)
-                .accountNonLocked(true)
-                .credentialsNonExpired(true)
+                .roles(roles)
+                .accountNoExpired(true)
+                .accountNoLocked(true)
+                .credentialNoExpired(true)
                 .isEnabled(true)
                 .build();
 
         userRepository.save(user);
         ArrayList<SimpleGrantedAuthority> authorityList = new ArrayList<>();
-        user.getRoleEntities().forEach(role -> authorityList.add(new SimpleGrantedAuthority("ROLE_".concat(role.getRoleName().name()))));
-        user.getRoleEntities()
+        user.getRoles().forEach(
+                role -> authorityList.add(new SimpleGrantedAuthority("ROLE_".concat(role.getRoleName().name()))));
+        user.getRoles()
                 .stream()
                 .flatMap(role -> role.getPermissionEntities().stream())
-                .forEach(permission -> authorityList.add(new SimpleGrantedAuthority(permission.getPermissionName().name())));
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), authorityList);
+                .forEach(permission -> authorityList
+                        .add(new SimpleGrantedAuthority(permission.getPermissionName().name())));
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(),
+                authorityList);
         String token = jwtUtils.createToken(authentication);
         return new AuthResponse(user.getUsername(), "User created successfully", token, true);
     }
