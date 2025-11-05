@@ -29,8 +29,10 @@ public class Role {
             name = "role_has_permission",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    @Builder.Default
     private Set<PermissionEntity> permissionEntities = new HashSet<>();
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
+    @Builder.Default
     private Set<User> users = new HashSet<>();
 }

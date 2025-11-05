@@ -24,6 +24,7 @@ public class PermissionEntity {
     private PermissionEnum permissionName;
 
     @ManyToMany(mappedBy = "permissionEntities", fetch = FetchType.EAGER)
+    @Builder.Default
     private Set<Role> roleEntities = new HashSet<>();
 
 }

@@ -5,9 +5,7 @@ import com.agora.profile.dto.KeywordDto;
 import com.agora.profile.dto.UpdateProfileRequest;
 import com.agora.profile.dto.UserProfileResponseDto;
 import com.agora.profile.model.Educacion;
-import com.agora.profile.repository.EducacionRepository;
 import com.agora.tag.repository.KeywordRepository;
-import com.agora.user.repository.UserKeywordRepository;
 import com.agora.user.repository.UserRepository;
 import com.agora.tag.model.Keyword;
 import com.agora.user.model.User;
@@ -26,8 +24,6 @@ public class ProfileService implements IProfileService {
 
     private final UserRepository userRepository;
     private final KeywordRepository keywordRepository;
-    private final UserKeywordRepository userKeywordRepository;
-    private final EducacionRepository educacionRepository;
 
     @Override
     @Transactional

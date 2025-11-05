@@ -60,9 +60,10 @@ public class DataInitializer {
                             permissionRepository.findByPermissionName(PermissionEnum.VER_RECOMENDACIONES).get()
                     ))
                     .build();
-
-            roleRepository.findByRoleName(RoleEnum.ACADEMICO).orElseGet(() -> roleRepository.save(academico));
-            roleRepository.findByRoleName(RoleEnum.COMUNICADOR).orElseGet(() -> roleRepository.save(comunicador));
+                List.of(academico, comunicador).forEach(role ->
+                                roleRepository.findByRoleName(role.getRoleName())
+                                                .orElseGet(() -> roleRepository.save(role))
+                );
 
             var encoder = new BCryptPasswordEncoder();
 
@@ -70,7 +71,7 @@ public class DataInitializer {
                 User academicoUser = User.builder()
                         .username("Academico Test")
                         .email("academico_test@email.com")
-                        .password(encoder.encode("123"))
+                        .password(encoder.encode("TestPassword123!"))
                         .roles(Set.of(roleRepository.findByRoleName(RoleEnum.ACADEMICO).get()))
                         .accountNoExpired(true)
                         .accountNoLocked(true)
@@ -84,7 +85,7 @@ public class DataInitializer {
                 User comunicadorUser = User.builder()
                         .username("Comunicador Test")
                         .email("comunicador_test@email.com")
-                        .password(encoder.encode("123"))
+                        .password(encoder.encode("TestPassword123!"))
                         .roles(Set.of(roleRepository.findByRoleName(RoleEnum.COMUNICADOR).get()))
                         .accountNoExpired(true)
                         .accountNoLocked(true)
@@ -94,7 +95,6 @@ public class DataInitializer {
                 userRepository.save(comunicadorUser);
             }
 
-            System.out.println("Roles, permisos y usuarios inicializados correctamente.");
         };
     }
 }

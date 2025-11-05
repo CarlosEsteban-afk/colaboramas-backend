@@ -23,5 +23,6 @@ public class Keyword {
     private String name;
 
     @OneToMany(mappedBy = "keyword", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private Set<UserKeyword> userLinks = new HashSet<>();
 }
