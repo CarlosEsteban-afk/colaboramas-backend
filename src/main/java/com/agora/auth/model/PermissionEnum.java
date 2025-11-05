@@ -1,4 +1,4 @@
-package com.agora.persistence;
+package com.agora.auth.model;
 
 public enum PermissionEnum {
     VER_RECOMENDACIONES,

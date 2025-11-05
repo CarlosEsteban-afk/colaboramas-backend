@@ -1,7 +1,7 @@
 package com.agora.user.model;
 
 import com.agora.profile.model.Educacion;
-import com.agora.tag.model.Keyword;
+import com.agora.auth.model.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.HashSet;

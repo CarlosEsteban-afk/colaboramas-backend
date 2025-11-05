@@ -1,7 +1,7 @@
-package com.agora.repository;
+package com.agora.auth.repository;
 
-import com.agora.persistence.PermissionEntity;
-import com.agora.persistence.PermissionEnum;
+import com.agora.auth.model.PermissionEntity;
+import com.agora.auth.model.PermissionEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

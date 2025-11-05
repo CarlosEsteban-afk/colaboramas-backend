@@ -3,10 +3,11 @@ package com.agora.auth.service;
 import com.agora.auth.dto.AuthCreateUserRequest;
 import com.agora.auth.dto.AuthLoginRequest;
 import com.agora.auth.dto.AuthResponse;
-import com.agora.user.repository.RoleRepository;
+
+import com.agora.auth.repository.RoleRepository;
 import com.agora.user.repository.UserRepository;
-import com.agora.user.model.Role;
-import com.agora.user.model.RoleEnum;
+import com.agora.auth.model.Role;
+import com.agora.auth.model.RoleEnum;
 import com.agora.user.model.User;
 import com.agora.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +17,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+
 @Service
 public class AuthService {
 
@@ -37,8 +38,7 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JwtUtils jwtUtils;
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+
 
     public AuthResponse loginUser(AuthLoginRequest request) {
         String email = request.email();
@@ -62,7 +62,8 @@ public class AuthService {
                 .map(RoleEnum::valueOf)
                 .toList();
 
-        Set<Role> roles = roleRepository.findRolesByRoleNameIn(roleEnums).stream().collect(Collectors.toSet());
+        Set<Role> roles = new HashSet<>(roleRepository.findRolesByRoleNameIn(roleEnums));
+
         if (roles.isEmpty()) {
             throw new IllegalArgumentException("The specified role does not exist");
         }
@@ -89,8 +90,11 @@ public class AuthService {
                         .add(new SimpleGrantedAuthority(permission.getPermissionName().name())));
         Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(),
                 authorityList);
+
         String token = jwtUtils.createToken(authentication);
+
         return new AuthResponse(user.getUsername(), "User created successfully", token, true);
     }
+
 
 }

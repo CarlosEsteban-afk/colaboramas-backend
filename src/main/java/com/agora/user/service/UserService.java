@@ -1,8 +1,8 @@
 package com.agora.user.service;
 
-import com.agora.user.model.Role;
-import com.agora.user.model.RoleEnum;
-import com.agora.user.repository.RoleRepository;
+import com.agora.auth.model.Role;
+import com.agora.auth.model.RoleEnum;
+import com.agora.auth.repository.RoleRepository;
 import com.agora.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

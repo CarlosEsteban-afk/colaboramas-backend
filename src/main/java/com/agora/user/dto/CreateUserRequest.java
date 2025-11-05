@@ -1,7 +1,7 @@
 package com.agora.user.dto;
 
 
-import com.agora.user.model.RoleEnum;
+import com.agora.auth.model.RoleEnum;
 
 import java.util.Set;
 
