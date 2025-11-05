@@ -3,7 +3,7 @@ package com.agora.config;
 import com.agora.auth.model.PermissionEntity;
 import com.agora.auth.model.PermissionEnum;
 import com.agora.auth.repository.PermissionRepository;
-import com.agora.auth.repository.RoleRepository;
+import com.agora.user.repository.RoleRepository;
 import com.agora.user.repository.UserRepository;
 import com.agora.auth.model.Role;
 import com.agora.auth.model.RoleEnum;
@@ -68,13 +68,13 @@ public class DataInitializer {
 
             if (userRepository.findUserByUsername("academico_test@email.com").isEmpty()) {
                 User academicoUser = User.builder()
-                        .name("Academico Test")
-                        .username("academico_test@email.com")
+                        .username("Academico Test")
+                        .email("academico_test@email.com")
                         .password(encoder.encode("123"))
-                        .roleEntities(Set.of(roleRepository.findByRoleName(RoleEnum.ACADEMICO).get()))
-                        .accountNonExpired(true)
-                        .accountNonLocked(true)
-                        .credentialsNonExpired(true)
+                        .roles(Set.of(roleRepository.findByRoleName(RoleEnum.ACADEMICO).get()))
+                        .accountNoExpired(true)
+                        .accountNoLocked(true)
+                        .credentialNoExpired(true)
                         .isEnabled(true)
                         .build();
                 userRepository.save(academicoUser);
@@ -82,13 +82,13 @@ public class DataInitializer {
 
             if (userRepository.findUserByUsername("comunicador_test@email.com").isEmpty()) {
                 User comunicadorUser = User.builder()
-                        .name("Comunicador Test")
-                        .username("comunicador_test@email.com")
+                        .username("Comunicador Test")
+                        .email("comunicador_test@email.com")
                         .password(encoder.encode("123"))
-                        .roleEntities(Set.of(roleRepository.findByRoleName(RoleEnum.COMUNICADOR).get()))
-                        .accountNonExpired(true)
-                        .accountNonLocked(true)
-                        .credentialsNonExpired(true)
+                        .roles(Set.of(roleRepository.findByRoleName(RoleEnum.COMUNICADOR).get()))
+                        .accountNoExpired(true)
+                        .accountNoLocked(true)
+                        .credentialNoExpired(true)
                         .isEnabled(true)
                         .build();
                 userRepository.save(comunicadorUser);

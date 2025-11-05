@@ -4,7 +4,7 @@ import com.agora.auth.dto.AuthCreateUserRequest;
 import com.agora.auth.dto.AuthLoginRequest;
 import com.agora.auth.dto.AuthResponse;
 
-import com.agora.auth.repository.RoleRepository;
+import com.agora.user.repository.RoleRepository;
 import com.agora.user.repository.UserRepository;
 import com.agora.auth.model.Role;
 import com.agora.auth.model.RoleEnum;

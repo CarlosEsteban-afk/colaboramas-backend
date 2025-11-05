@@ -1,5 +1,5 @@
 
-package com.agora.auth.repository;
+package com.agora.user.repository;
 
 import com.agora.auth.model.Role;
 import com.agora.auth.model.RoleEnum;
