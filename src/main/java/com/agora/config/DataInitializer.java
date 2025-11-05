@@ -66,7 +66,7 @@ public class DataInitializer {
 
             var encoder = new BCryptPasswordEncoder();
 
-            if (userRepository.findUserByUsername("academico_test@email.com").isEmpty()) {
+            if (userRepository.findByEmail("academico_test@email.com").isEmpty()) {
                 User academicoUser = User.builder()
                         .username("Academico Test")
                         .email("academico_test@email.com")
@@ -80,7 +80,7 @@ public class DataInitializer {
                 userRepository.save(academicoUser);
             }
 
-            if (userRepository.findUserByUsername("comunicador_test@email.com").isEmpty()) {
+            if (userRepository.findByEmail("comunicador_test@email.com").isEmpty()) {
                 User comunicadorUser = User.builder()
                         .username("Comunicador Test")
                         .email("comunicador_test@email.com")
