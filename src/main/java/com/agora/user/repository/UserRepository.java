@@ -1,4 +1,4 @@
-package com.agora.repository;
+package com.agora.user.repository;
 
 import com.agora.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;

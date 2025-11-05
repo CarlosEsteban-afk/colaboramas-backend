@@ -3,10 +3,10 @@ package com.agora.auth.service;
 import com.agora.auth.dto.AuthCreateUserRequest;
 import com.agora.auth.dto.AuthLoginRequest;
 import com.agora.auth.dto.AuthResponse;
-import com.agora.repository.RoleRepository;
-import com.agora.repository.UserRepository;
-import com.agora.user.model.Role;
-import com.agora.user.model.RoleEnum;
+import com.agora.auth.repository.RoleRepository;
+import com.agora.user.repository.UserRepository;
+import com.agora.auth.model.Role;
+import com.agora.auth.model.RoleEnum;
 import com.agora.user.model.User;
 import com.agora.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +19,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service

@@ -1,5 +1,6 @@
 package com.agora.user.model;
 
+import com.agora.auth.model.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.HashSet;

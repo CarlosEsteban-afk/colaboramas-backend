@@ -2,7 +2,7 @@ package com.agora.auth.service;
 
 
 import com.agora.user.model.User;
-import com.agora.repository.UserRepository;
+import com.agora.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

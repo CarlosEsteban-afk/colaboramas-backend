@@ -4,7 +4,7 @@ import com.agora.auth.dto.AuthCreateUserRequest;
 import com.agora.auth.dto.AuthLoginRequest;
 import com.agora.auth.dto.AuthResponse;
 import com.agora.auth.service.AuthService;
-import com.agora.repository.UserRepository;
+import com.agora.user.repository.UserRepository;
 import com.agora.user.model.User;
 import com.agora.util.JwtUtils;
 import com.auth0.jwt.interfaces.Claim;

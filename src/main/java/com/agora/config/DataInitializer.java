@@ -1,12 +1,12 @@
 package com.agora.config;
 
-import com.agora.persistence.PermissionEntity;
-import com.agora.persistence.PermissionEnum;
-import com.agora.repository.PermissionRepository;
-import com.agora.repository.RoleRepository;
-import com.agora.repository.UserRepository;
-import com.agora.user.model.Role;
-import com.agora.user.model.RoleEnum;
+import com.agora.auth.model.PermissionEntity;
+import com.agora.auth.model.PermissionEnum;
+import com.agora.auth.repository.PermissionRepository;
+import com.agora.auth.repository.RoleRepository;
+import com.agora.user.repository.UserRepository;
+import com.agora.auth.model.Role;
+import com.agora.auth.model.RoleEnum;
 import com.agora.user.model.User;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;

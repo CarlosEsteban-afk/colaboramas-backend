@@ -1,7 +1,7 @@
-package com.agora.repository;
+package com.agora.auth.repository;
 
-import com.agora.user.model.Role;
-import com.agora.user.model.RoleEnum;
+import com.agora.auth.model.Role;
+import com.agora.auth.model.RoleEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

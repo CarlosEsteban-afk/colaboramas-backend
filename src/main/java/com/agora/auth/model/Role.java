@@ -1,6 +1,6 @@
-package com.agora.user.model;
+package com.agora.auth.model;
 
-import com.agora.persistence.PermissionEntity;
+import com.agora.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
