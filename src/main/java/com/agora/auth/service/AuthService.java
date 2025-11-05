@@ -20,9 +20,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class AuthService {
@@ -61,7 +63,8 @@ public class AuthService {
                 .map(RoleEnum::valueOf)
                 .toList();
 
-        Set<Role> roles = roleRepository.findRolesByRoleNameIn(roleEnums).stream().collect(Collectors.toSet());
+        Set<Role> roles = new HashSet<>(roleRepository.findRolesByRoleNameIn(roleEnums));
+
         if (roles.isEmpty()) {
             throw new IllegalArgumentException("The specified role does not exist");
         }
@@ -78,15 +81,24 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
-        ArrayList<SimpleGrantedAuthority> authorityList = new ArrayList<>();
-        user.getRoleEntities().forEach(role -> authorityList.add(new SimpleGrantedAuthority("ROLE_".concat(role.getRoleName().name()))));
-        user.getRoleEntities()
-                .stream()
-                .flatMap(role -> role.getPermissionEntities().stream())
-                .forEach(permission -> authorityList.add(new SimpleGrantedAuthority(permission.getPermissionName().name())));
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), authorityList);
+
+        List<SimpleGrantedAuthority> authorities = roles.stream()
+                .flatMap(role -> {
+                    Stream<SimpleGrantedAuthority> roleAuthority = Stream.of(
+                            new SimpleGrantedAuthority("ROLE_" + role.getRoleName().name())
+                    );
+                    Stream<SimpleGrantedAuthority> permissionAuthorities = role.getPermissionEntities()
+                            .stream()
+                            .map(permission -> new SimpleGrantedAuthority(permission.getPermissionName().name()));
+                   return Stream.concat(roleAuthority, permissionAuthorities);
+                })
+                .toList();
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), null, authorities);
         String token = jwtUtils.createToken(authentication);
+
         return new AuthResponse(user.getUsername(), "User created successfully", token, true);
     }
+
 
 }
