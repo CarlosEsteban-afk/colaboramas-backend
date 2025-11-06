@@ -19,4 +19,10 @@ public class ProfileController {
         UserProfileResponseDto updatedUser = profileService.updateProfile(userId, request);
         return ResponseEntity.ok(updatedUser);
     }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserProfileResponseDto> getProfile(@PathVariable Long userId) {
+        UserProfileResponseDto userProfile = profileService.getProfile(userId);
+        return ResponseEntity.ok(userProfile);
+    }
 }

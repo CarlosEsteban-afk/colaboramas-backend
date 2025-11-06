@@ -79,6 +79,13 @@ public class ProfileService implements IProfileService {
         return toUserProfileResponseDto(updatedUser);
     }
 
+    @Override
+    public UserProfileResponseDto getProfile(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        return toUserProfileResponseDto(user);
+    }
+
     private UserProfileResponseDto toUserProfileResponseDto(User user) {
         UserProfileResponseDto dto = new UserProfileResponseDto();
         dto.setId(user.getId());
