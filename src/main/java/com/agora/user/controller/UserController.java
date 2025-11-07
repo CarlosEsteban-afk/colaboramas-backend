@@ -4,6 +4,7 @@ import com.agora.user.dto.CreateUserRequest;
 import com.agora.user.dto.UserDTO;
 import com.agora.user.model.User;
 import com.agora.user.service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,6 +36,12 @@ public class UserController {
                 request.roles()
         );
         return new UserDTO(user.getId(), user.getUsername());
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
+        return ResponseEntity.noContent().build();
     }
 
 
