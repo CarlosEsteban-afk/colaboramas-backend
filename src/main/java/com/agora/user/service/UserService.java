@@ -61,4 +61,9 @@ public class UserService {
         user.setIsEnabled(false);
         userRepository.save(user);
     }
+
+    public User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+    }
 }
