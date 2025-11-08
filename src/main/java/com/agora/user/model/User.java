@@ -26,6 +26,9 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(name="image_url")
+    private String imageUrl;
+
     @Column(nullable = false)
     private String password;
 

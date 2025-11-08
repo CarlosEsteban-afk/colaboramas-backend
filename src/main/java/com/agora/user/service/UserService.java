@@ -11,6 +11,7 @@ import com.agora.user.model.User;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -83,6 +84,19 @@ public class UserService {
                         .proyectosRecientes(u.getProyectosRecientes())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+
+    public User updateUserImageUrl(Long userId, String imageUrl) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if (optionalUser.isEmpty()) {
+            throw new RuntimeException("Usuario no encontrado con id: " + userId);
+        }
+
+        User user = optionalUser.get();
+        user.setImageUrl(imageUrl);
+        return userRepository.save(user);
     }
 
 
