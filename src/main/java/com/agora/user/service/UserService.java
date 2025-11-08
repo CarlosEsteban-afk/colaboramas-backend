@@ -2,6 +2,7 @@ package com.agora.user.service;
 
 import com.agora.auth.model.Role;
 import com.agora.auth.model.RoleEnum;
+import com.agora.user.dto.UserCardDTO;
 import com.agora.user.repository.RoleRepository;
 import com.agora.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,6 +12,7 @@ import com.agora.user.model.User;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -29,7 +31,7 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public User createUser(String username,String email, String password, Set<RoleEnum> roles) {
+    public User createUser(String username, String email, String password, Set<RoleEnum> roles) {
         Set<Role> roleEntities = new HashSet<>(roleRepository.findRolesByRoleNameIn((List<RoleEnum>) roles));
 
         if (roleEntities.isEmpty()) {
@@ -66,4 +68,22 @@ public class UserService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
     }
+
+    public List<UserCardDTO> getAllUserCards() {
+        String currentUsername="manolo";
+
+        return userRepository.findAll().stream()
+                .filter(u -> !u.getUsername().equals(currentUsername))
+                .map(u -> UserCardDTO.builder()
+                        .id(u.getId())
+                        .username(u.getUsername())
+                        .historialEducativo(u.getHistorialEducativo())
+                        .motivaciones(u.getMotivaciones())
+                        .actividadesPersonales(u.getActividadesPersonales())
+                        .proyectosRecientes(u.getProyectosRecientes())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+
 }
