@@ -26,7 +26,17 @@ public class UserController {
         this.userService = userService;
         this.userImageService = userImageService;
     }
-
+    @PostMapping("/upload-image/{userId}")
+    public ResponseEntity<String> uploadImage(@PathVariable Long userId, @RequestParam("file") MultipartFile file) {
+        try {
+            System.out.println(userId);
+            String imageUrl = userImageService.uploadUserImage(file);
+            userService.updateUserImageUrl(userId, imageUrl);
+            return ResponseEntity.ok(imageUrl);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading image");
+        }
+    }
     @GetMapping
     public List<UserDTO> getAllUsers() {
         return userService.getAllUsers().stream().map(u -> new UserDTO(u.getId(), u.getUsername()))
@@ -60,16 +70,7 @@ public class UserController {
     }
 
 
-    @PostMapping("/users/{userId}/upload-image")
-    public ResponseEntity<String> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
-        try {
-            String imageUrl = userImageService.uploadUserImage(file);
-            userService.updateUserImageUrl(id, imageUrl);
-            return ResponseEntity.ok(imageUrl);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading image");
-        }
-    }
+
 
 
 
