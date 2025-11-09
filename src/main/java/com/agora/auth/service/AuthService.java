@@ -47,7 +47,7 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
 
-        Authentication authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), password);
+        Authentication authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -88,12 +88,12 @@ public class AuthService {
                 .flatMap(role -> role.getPermissionEntities().stream())
                 .forEach(permission -> authorityList
                         .add(new SimpleGrantedAuthority(permission.getPermissionName().name())));
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(),
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword(),
                 authorityList);
 
         String token = jwtUtils.createToken(authentication);
 
-        return new AuthResponse(user.getUsername(), "User created successfully", token, true);
+        return new AuthResponse(user.getEmail(), "User created successfully", token, true);
     }
 
 
