@@ -28,12 +28,12 @@ public class SearchService {
     public List<ProfileResponse> recommendProfiles() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        String username = authentication.getName();
+        String email = authentication.getName(); // Esto me extrae el email x alguna extraña razón
         if (authentication.getPrincipal() instanceof UserDetails) {
-            username = ((UserDetails) authentication.getPrincipal()).getUsername();
+            email = ((UserDetails) authentication.getPrincipal()).getUsername();
         }
-
-        User currentUser = userRepository.findUserByUsername(username)
+        System.out.println("Recommending profiles for user: " + email);
+        User currentUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         Long userId = currentUser.getId();
