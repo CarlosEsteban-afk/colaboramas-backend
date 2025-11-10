@@ -55,14 +55,6 @@ public class UserController {
         );
         return new UserDTO(user.getId(), user.getUsername());
     }
-    @PutMapping("/{userId}/complete-profile")
-    public ResponseEntity<UserDTO> completeProfile(
-            @PathVariable Long userId,
-            @RequestBody CompleteProfileDTO dto
-    ) {
-        User updatedUser = userService.completeUserProfile(userId, dto);
-        return ResponseEntity.ok(new UserDTO(updatedUser.getId(), updatedUser.getUsername()));
-    }
 
 
     @GetMapping("/cards")
