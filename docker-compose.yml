@@ -8,13 +8,21 @@ services:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: prod
+      # --- Variables para la conexión a la BD dentro de Docker ---
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/colabora
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: pass
-      # Actualizado para que la API se comunique con MinIO dentro de la red de Docker
+      # --- Variables para la conexión a MinIO dentro de Docker ---
       MINIO_ENDPOINT: http://minio:9000 
       MINIO_ACCESS-KEY: minioadmin
       MINIO_SECRET-KEY: minioadmin
+      # --- Variables de tu aplicación tomadas del .env ---
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_SECURITY_USER_NAME: admin
+      SPRING_SECURITY_USER_PASSWORD: admin123
+      # Nota: Los puntos (.) en los nombres de variables se reemplazan por guiones bajos (_)
+      SECURITY_JWT_USER_GENERATOR: AUTH0JWT-BACKEND
+      SECURITY_JWT_KEY_PRIVATE: key
     depends_on:
       - db
       - minio # Añadida dependencia de MinIO

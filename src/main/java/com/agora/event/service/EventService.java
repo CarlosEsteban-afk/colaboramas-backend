@@ -55,7 +55,7 @@ public class EventService {
         dto.setUbication(event.getUbication());
         dto.setDescription(event.getDescription());
         // Si el usuario no es nulo, usa su nombre, si no, "Scraper"
-        dto.setCreatedBy(event.getUser() != null ? event.getUser().getName() : "Scraper");
+        dto.setCreatedBy(event.getUser() != null ? event.getUser().getUsername() : "Scraper");
         return dto;
     }
 }
