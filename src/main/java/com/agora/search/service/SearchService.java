@@ -68,7 +68,8 @@ public class SearchService {
     private ProfileResponse buildProfileResponse(User user) {
         return ProfileResponse.builder()
                 .id(user.getId())
-                .nombre(user.getUsername()) 
+                .nombre(user.getUsername())
+                .imageUrl(user.getImageUrl())
                 .pais(user.getPais())
                 .ciudad(user.getCiudad())
                 .profesion(user.getHistorialEducativo().stream()
