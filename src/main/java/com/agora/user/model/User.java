@@ -22,7 +22,7 @@ public class User {
 
     @Column(unique = true, nullable = false)
     private String username;
-    
+
     @Column(unique = true, nullable = false)
     private String email;
 
@@ -65,5 +65,32 @@ public class User {
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     @Builder.Default
     private Set<Role> roles = new HashSet<>();
-}
 
+    @Column
+    private String pais;
+
+    @Column
+    private String ciudad;
+
+    @Column()
+    private Double latitud;
+
+    @Column()
+    private Double longitud;
+
+    public void addEducacion(Educacion educacion) {
+        if (this.historialEducativo == null) {
+            this.historialEducativo = new HashSet<>();
+        }
+        this.historialEducativo.add(educacion);
+        educacion.setUser(this);
+    }
+
+    public void addKeyword(UserKeyword userKeyword) {
+        if (this.keywords == null) {
+            this.keywords = new HashSet<>();
+        }
+        this.keywords.add(userKeyword);
+        userKeyword.setUser(this);
+    }
+}

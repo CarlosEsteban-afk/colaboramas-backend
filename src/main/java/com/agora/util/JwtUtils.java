@@ -10,6 +10,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -32,7 +33,7 @@ public class JwtUtils {
         Object principal = authentication.getPrincipal();
         String email;
 
-        if (principal instanceof org.springframework.security.core.userdetails.User userDetails) {
+        if (principal instanceof UserDetails userDetails) {
             email = userDetails.getUsername();
         } else if (principal instanceof User u) {
             email = u.getEmail();
