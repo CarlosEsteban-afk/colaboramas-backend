@@ -2,19 +2,22 @@ package com.agora.user.service;
 
 import com.agora.auth.model.Role;
 import com.agora.auth.model.RoleEnum;
-import com.agora.tag.model.Keyword;
-import com.agora.tag.model.KeywordType;
-import com.agora.tag.repository.KeywordRepository;
-import com.agora.user.dto.CompleteProfileDTO;
+import com.agora.user.dto.UpdateLocationRequest;
 import com.agora.user.dto.UserCardDTO;
-import com.agora.user.model.UserKeyword;
 import com.agora.user.repository.RoleRepository;
 import com.agora.user.repository.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.agora.user.model.User;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,12 +25,27 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-    private final KeywordRepository keywordRepository;
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, KeywordRepository keywordRepository) {
+
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
-        this.keywordRepository = keywordRepository;
+    }
+
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + email));
+    }
+
+    @Transactional
+    public void updateUserLocation(UpdateLocationRequest locationRequest) {
+        User currentUser = getCurrentUser();
+        currentUser.setLatitud(locationRequest.getLatitud());
+        currentUser.setLongitud(locationRequest.getLongitud());
+        userRepository.save(currentUser);
     }
 
     public User getUserByEmail(String email) {
@@ -36,7 +54,7 @@ public class UserService {
     }
 
     public User createUser(String username, String email, String password, Set<RoleEnum> roles) {
-        Set<Role> roleEntities = new HashSet<>(roleRepository.findRolesByRoleNameIn((List<RoleEnum>) roles));
+        Set<Role> roleEntities = new HashSet<>(roleRepository.findRolesByRoleNameIn(new ArrayList<>(roles)));
 
         if (roleEntities.isEmpty()) {
             throw new IllegalArgumentException("Roles not found");
@@ -101,60 +119,6 @@ public class UserService {
         User user = optionalUser.get();
         user.setImageUrl(imageUrl);
         return userRepository.save(user);
-    }
-
-
-    public User completeUserProfile(Long userId, CompleteProfileDTO dto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + userId));
-
-        user.setPais(dto.getPais());
-        user.setCiudad(dto.getCiudad());
-        user.setMotivaciones(dto.getMotivaciones());
-        user.setActividadesPersonales(dto.getActividades());
-        user.setProyectosRecientes(dto.getProyectos());
-
-        // === Educación (por ahora solo imprimir o guardar simple) ===
-        if (dto.getEducacion() != null && !dto.getEducacion().isBlank()) {
-            System.out.println("Educación registrada: " + dto.getEducacion());
-        }
-
-        // === Limpieza previa de keywords antiguas (si se quiere sobrescribir) ===
-        user.getKeywords().clear();
-
-        // === Procesar keywords desde los campos de texto ===
-        addKeywordsFromText(user, dto.getInvestigacion(), KeywordType.CAMPO_INVESTIGACION);
-        addKeywordsFromText(user, dto.getIntereses(), KeywordType.LINEA_INTERES);
-
-        return userRepository.save(user);
-    }
-
-    /**
-     * Divide el texto de entrada en tags individuales y los asocia al usuario.
-     * Ejemplo: "IA, Ciencia de datos; Machine Learning" → ["IA", "Ciencia de datos", "Machine Learning"]
-     */
-    private void addKeywordsFromText(User user, String text, KeywordType type) {
-        if (text == null || text.isBlank()) return;
-
-        List<String> keywordNames = Arrays.stream(text.split("[,;\\n]"))
-                .map(String::trim)
-                .filter(k -> !k.isEmpty())
-                .distinct()
-                .collect(Collectors.toList());
-
-        for (String kwName : keywordNames) {
-            Keyword keyword = keywordRepository.findByName(kwName)
-                    .orElseGet(() -> {
-                        Keyword newKeyword = new Keyword();
-                        newKeyword.setName(kwName);
-                        return keywordRepository.save(newKeyword);
-                    });
-            UserKeyword userKeyword = new UserKeyword();
-            userKeyword.setUser(user);
-            userKeyword.setKeyword(keyword);
-            userKeyword.setType(type);
-            user.addKeyword(userKeyword);
-        }
     }
 
 
