@@ -9,6 +9,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -27,7 +28,13 @@ public class JwtUtils {
     public String createToken(Authentication authentication) {
         Date now = new Date();
         Algorithm algorithm = Algorithm.HMAC256(this.privateKey);
-        String username = authentication.getPrincipal().toString();
+        String username;
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails) principal).getUsername();
+        } else {
+            username = principal.toString();
+        }
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
         String jwtToken = JWT.create()
@@ -35,7 +42,6 @@ public class JwtUtils {
                 .withSubject(username)
                 .withClaim("authorities", authorities)
                 .withIssuedAt(new Date(now.getTime()))
-                //.withExpiresAt(new Date(now.getTime()+1800000))
                 .withJWTId(UUID.randomUUID().toString())
                 .withNotBefore(new Date(System.currentTimeMillis()))
                 .sign(algorithm);
@@ -50,7 +56,7 @@ public class JwtUtils {
                     .build();
             DecodedJWT decodedJWT = verifier.verify(token);
             return decodedJWT;
-        }catch (JWTVerificationException exception) {
+        } catch (JWTVerificationException exception) {
             throw new JWTVerificationException(exception.getMessage());
         }
     }
