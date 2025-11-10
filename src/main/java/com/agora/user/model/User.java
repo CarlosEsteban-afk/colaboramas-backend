@@ -2,6 +2,7 @@ package com.agora.user.model;
 
 import com.agora.profile.model.Educacion;
 import com.agora.auth.model.Role;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.HashSet;
@@ -45,6 +46,7 @@ public class User {
     private Boolean credentialNoExpired;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     @Builder.Default
     private Set<Educacion> historialEducativo = new HashSet<>();
 

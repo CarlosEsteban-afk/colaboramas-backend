@@ -84,6 +84,8 @@ public class DataInitializer {
                     .build();
                 
                 ana.addEducacion(Educacion.builder().institucion("UBA").titulo("Doctorado en Ciencias de la Computación").build());
+                ana.setProyectosRecientes("Proyecto de automatizacion");
+                ana.setActividadesPersonales("Jugadora de cartas");
                 addKeywordsToUser(ana, keywordRepository, KeywordType.CAMPO_INVESTIGACION, "Inteligencia Artificial", "Machine Learning");
                 addKeywordsToUser(ana, keywordRepository, KeywordType.LINEA_INTERES, "Desarrollo Sostenible");
                 userRepository.save(ana);
