@@ -32,7 +32,6 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    // --- Campos de Estado (como antes) ---
     @Column(name = "is_enabled")
     private Boolean isEnabled;
 
@@ -45,17 +44,14 @@ public class User {
     @Column(name = "credential_no_expired")
     private Boolean credentialNoExpired;
 
-    // --- Historial Educativo (Estructurado) ---
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<Educacion> historialEducativo = new HashSet<>();
 
-    // --- Etiquetas para Búsqueda (Estructurado) ---
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<UserKeyword> keywords = new HashSet<>();
 
-    // --- Campos Descriptivos (Texto Largo) ---
     @Column(columnDefinition = "TEXT")
     private String motivaciones;
 
@@ -65,7 +61,6 @@ public class User {
     @Column(columnDefinition = "TEXT")
     private String proyectosRecientes;
 
-    // --- Relación con Roles (como antes) ---
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     @Builder.Default
