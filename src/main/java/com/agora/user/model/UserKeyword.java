@@ -11,7 +11,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "user_keywords")
+@Table(name = "user_keywords", uniqueConstraints = { 
+        @UniqueConstraint(columnNames = { "user_id", "keyword_id", "keyword_type" })
+})
 public class UserKeyword {
 
     @Id
