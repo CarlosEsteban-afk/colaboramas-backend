@@ -4,10 +4,9 @@ import com.agora.auth.dto.AuthCreateUserRequest;
 import com.agora.auth.dto.AuthLoginRequest;
 import com.agora.auth.dto.AuthResponse;
 import com.agora.auth.service.AuthService;
-import com.agora.auth.service.UserDetailsServiceImpl;
 import com.agora.user.dto.UserResponseDTO;
-import com.agora.user.repository.UserRepository;
 import com.agora.user.model.User;
+import com.agora.user.repository.UserRepository;
 import com.agora.user.service.UserService;
 import com.agora.util.JwtUtils;
 import com.auth0.jwt.interfaces.Claim;
@@ -21,7 +20,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -31,12 +32,13 @@ public class AuthController {
     private AuthService authService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private JwtUtils jwtUtils;
 
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthLoginRequest userRequest) {
@@ -49,14 +51,13 @@ public class AuthController {
         AuthResponse response = authService.createUser(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
         String email = userDetails.getUsername();
         User user = userService.getUserByEmail(email);
         return ResponseEntity.ok(UserResponseDTO.fromEntity(user));
     }
-
-
 
     @PostMapping("/validate-token")
     public ResponseEntity<Map<String, Object>> validateToken(@RequestHeader("Authorization") String token) {
@@ -81,7 +82,6 @@ public class AuthController {
             response.put("authorities", Arrays.asList(authorities.split(",")));
 
             return ResponseEntity.ok(response);
-
         } catch (Exception e) {
             Map<String, Object> error = new HashMap<>();
             error.put("valid", false);
