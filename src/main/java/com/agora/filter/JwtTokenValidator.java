@@ -1,19 +1,18 @@
 package com.agora.filter;
 
 import com.agora.util.JwtUtils;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -28,46 +27,46 @@ public class JwtTokenValidator extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(
-            @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
-    ) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        String jwtToken = request.getHeader("Authorization");
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String jwtToken = authHeader.substring(7);
+        if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
+            jwtToken = jwtToken.substring(7);
 
             try {
                 DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
 
-                String email = jwtUtils.extractUsername(decodedJWT);
+                String username = jwtUtils.extractUsername(decodedJWT);
                 String stringAuthorities = jwtUtils.getSpecificClaim(decodedJWT, "authorities").asString();
 
+                Collection<? extends GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(stringAuthorities);
+                
+                // DEBUG
                 System.out.println("===== JWT VALIDATOR DEBUG =====");
                 System.out.println("Token recibido: " + jwtToken);
-                System.out.println("Email extraído del token: " + email);
-                System.out.println("Authorities: " + stringAuthorities);
+                System.out.println("Email extraído del token: " + username);
+                System.out.println("Authorities: " + stringAuthorities.replace(",", ","));
                 System.out.println("================================");
 
-                Collection<? extends GrantedAuthority> authorities =
-                        AuthorityUtils.commaSeparatedStringToAuthorityList(stringAuthorities);
 
-                User userDetails = new User(email, "", authorities);
+                SecurityContext context = SecurityContextHolder.createEmptyContext();
+                
+                // Usar el constructor de 3 argumentos para crear un token AUTENTICADO
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                        username, null, authorities);
 
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
+                context.setAuthentication(authenticationToken);
+                SecurityContextHolder.setContext(context);
 
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-
-            } catch (Exception ex) {
-                System.out.println("Error validando token JWT: " + ex.getMessage());
+            } catch (JWTVerificationException e) {
+                // Manejar token inválido
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido o expirado");
+                return;
             }
         }
-
         filterChain.doFilter(request, response);
     }
 }
