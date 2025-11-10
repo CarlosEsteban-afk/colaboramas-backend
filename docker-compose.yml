@@ -1,11 +1,12 @@
 version: '3.8'
 
 services:
-  api:
+  api-service:
     build: .
-    container_name: api-service
     ports:
       - "8080:8080"
+    volumes:
+      - ./.env:/app/.env
     environment:
       SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/colabora
