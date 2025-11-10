@@ -1,5 +1,6 @@
 package com.agora.user.model;
 
+import com.agora.profile.model.Educacion;
 import com.agora.auth.model.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,31 +20,77 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(unique = true, nullable = false)
+    private String username;
 
-    @Column(nullable = false)
-    private String username; //email
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @Column(name="image_url")
+    private String imageUrl;
 
     @Column(nullable = false)
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_has_rol",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roleEntities = new HashSet<>();
-
-    @Column(name = "account_non_expired")
-    private boolean accountNonExpired;
-
-    @Column(name = "account_non_locked")
-    private boolean accountNonLocked;
-
-    @Column(name = "credentials_non_expired")
-    private boolean credentialsNonExpired;
-
     @Column(name = "is_enabled")
-    private boolean isEnabled;
+    private Boolean isEnabled;
+
+    @Column(name = "account_no_expired")
+    private Boolean accountNoExpired;
+
+    @Column(name = "account_no_locked")
+    private Boolean accountNoLocked;
+
+    @Column(name = "credential_no_expired")
+    private Boolean credentialNoExpired;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<Educacion> historialEducativo = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<UserKeyword> keywords = new HashSet<>();
+
+    @Column(columnDefinition = "TEXT")
+    private String motivaciones;
+
+    @Column(columnDefinition = "TEXT")
+    private String actividadesPersonales;
+
+    @Column(columnDefinition = "TEXT")
+    private String proyectosRecientes;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @Builder.Default
+    private Set<Role> roles = new HashSet<>();
+
+    @Column
+    private String pais;
+
+    @Column
+    private String ciudad;
+
+    @Column()
+    private Double latitud;
+
+    @Column()
+    private Double longitud;
+
+    public void addEducacion(Educacion educacion) {
+        if (this.historialEducativo == null) {
+            this.historialEducativo = new HashSet<>();
+        }
+        this.historialEducativo.add(educacion);
+        educacion.setUser(this);
+    }
+
+    public void addKeyword(UserKeyword userKeyword) {
+        if (this.keywords == null) {
+            this.keywords = new HashSet<>();
+        }
+        this.keywords.add(userKeyword);
+        userKeyword.setUser(this);
+    }
 }

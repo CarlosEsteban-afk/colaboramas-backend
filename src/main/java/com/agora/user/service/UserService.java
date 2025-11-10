@@ -2,7 +2,8 @@ package com.agora.user.service;
 
 import com.agora.auth.model.Role;
 import com.agora.auth.model.RoleEnum;
-import com.agora.auth.repository.RoleRepository;
+import com.agora.user.dto.UserCardDTO;
+import com.agora.user.repository.RoleRepository;
 import com.agora.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,9 @@ import com.agora.user.model.User;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -24,12 +27,12 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User getUserByUsername(String username) {
-        return userRepository.findUserByUsername(username)
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public User createUser(String name, String username, String password, Set<RoleEnum> roles) {
+    public User createUser(String username, String email, String password, Set<RoleEnum> roles) {
         Set<Role> roleEntities = new HashSet<>(roleRepository.findRolesByRoleNameIn((List<RoleEnum>) roles));
 
         if (roleEntities.isEmpty()) {
@@ -37,13 +40,13 @@ public class UserService {
         }
 
         User user = User.builder()
-                .name(name)
                 .username(username)
+                .email(email)
                 .password(passwordEncoder.encode(password))
-                .roleEntities(roleEntities)
-                .accountNonExpired(true)
-                .accountNonLocked(true)
-                .credentialsNonExpired(true)
+                .roles(roleEntities)
+                .accountNoExpired(true)
+                .accountNoLocked(true)
+                .credentialNoExpired(true)
                 .isEnabled(true)
                 .build();
 
@@ -54,4 +57,47 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setIsEnabled(false);
+        userRepository.save(user);
+    }
+
+    public User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+    }
+
+    public List<UserCardDTO> getAllUserCards() {
+        String currentUsername="manolo";
+
+        return userRepository.findAll().stream()
+                .filter(u -> !u.getUsername().equals(currentUsername))
+                .map(u -> UserCardDTO.builder()
+                        .id(u.getId())
+                        .username(u.getUsername())
+                        .historialEducativo(u.getHistorialEducativo())
+                        .motivaciones(u.getMotivaciones())
+                        .actividadesPersonales(u.getActividadesPersonales())
+                        .proyectosRecientes(u.getProyectosRecientes())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+
+    public User updateUserImageUrl(Long userId, String imageUrl) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if (optionalUser.isEmpty()) {
+            throw new RuntimeException("Usuario no encontrado con id: " + userId);
+        }
+
+        User user = optionalUser.get();
+        user.setImageUrl(imageUrl);
+        return userRepository.save(user);
+    }
+
+
 }

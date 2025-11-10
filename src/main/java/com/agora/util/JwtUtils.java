@@ -1,5 +1,6 @@
 package com.agora.util;
 
+import com.agora.user.model.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -9,6 +10,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -27,19 +29,31 @@ public class JwtUtils {
     public String createToken(Authentication authentication) {
         Date now = new Date();
         Algorithm algorithm = Algorithm.HMAC256(this.privateKey);
-        String username = authentication.getPrincipal().toString();
+
+        Object principal = authentication.getPrincipal();
+        String email;
+
+        if (principal instanceof UserDetails userDetails) {
+            email = userDetails.getUsername();
+        } else if (principal instanceof User u) {
+            email = u.getEmail();
+        } else {
+            email = principal.toString();
+        }
+
         String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
-        String jwtToken = JWT.create()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+        return JWT.create()
                 .withIssuer(this.userGenerator)
-                .withSubject(username)
+                .withSubject(email)
                 .withClaim("authorities", authorities)
-                .withIssuedAt(new Date(now.getTime()))
-                //.withExpiresAt(new Date(now.getTime()+1800000))
+                .withIssuedAt(now)
+                //.withExpiresAt(new Date(now.getTime() + 1800000)) // 30 min opcional
                 .withJWTId(UUID.randomUUID().toString())
-                .withNotBefore(new Date(System.currentTimeMillis()))
+                .withNotBefore(now)
                 .sign(algorithm);
-        return jwtToken;
     }
 
     public DecodedJWT validateToken(String token) {
@@ -48,15 +62,14 @@ public class JwtUtils {
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer(this.userGenerator)
                     .build();
-            DecodedJWT decodedJWT = verifier.verify(token);
-            return decodedJWT;
-        }catch (JWTVerificationException exception) {
+            return verifier.verify(token);
+        } catch (JWTVerificationException exception) {
             throw new JWTVerificationException(exception.getMessage());
         }
     }
 
     public String extractUsername(DecodedJWT decodedJWT) {
-        return decodedJWT.getSubject().toString();
+        return decodedJWT.getSubject();
     }
 
     public Claim getSpecificClaim(DecodedJWT decodedJWT, String claimName) {
