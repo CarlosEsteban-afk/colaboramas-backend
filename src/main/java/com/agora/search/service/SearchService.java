@@ -28,13 +28,14 @@ public class SearchService {
     public List<ProfileResponse> recommendProfiles() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        String username = authentication.getName();
+        String email = authentication.getName();
         if (authentication.getPrincipal() instanceof UserDetails) {
-            username = ((UserDetails) authentication.getPrincipal()).getUsername();
+            email = ((UserDetails) authentication.getPrincipal()).getUsername();
         }
-
-        User currentUser = userRepository.findByEmail(username)
+        
+        User currentUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
         Long userId = currentUser.getId();
 
         List<Object[]> results = userRepository.findRecommendedUsersByProximity(userId,
@@ -67,8 +68,7 @@ public class SearchService {
     private ProfileResponse buildProfileResponse(User user) {
         return ProfileResponse.builder()
                 .id(user.getId())
-                .nombre(user.getUsername())
-                .imageUrl(user.getImageUrl())
+                .nombre(user.getUsername()) 
                 .pais(user.getPais())
                 .ciudad(user.getCiudad())
                 .profesion(user.getHistorialEducativo().stream()
