@@ -16,12 +16,28 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findUserByUsername(String username);
 
-    @Query("SELECT u, COUNT(DISTINCT uk.keyword) as commonKeywords " +
-            "FROM User u JOIN u.keywords uk " +
-            "WHERE uk.keyword IN (SELECT uk2.keyword FROM User u2 JOIN u2.keywords uk2 WHERE u2.id = :userId) " +
-            "AND u.id != :userId " +
-            "GROUP BY u " +
-            "ORDER BY commonKeywords DESC")
+    @Query(value = """
+            SELECT
+                u.id, u.username,
+                COUNT(DISTINCT uk_otros.keyword_id) AS commonKeywords,
+                0.0 AS distanciaEnKm
+            FROM
+                user_keywords AS uk_actual
+            JOIN
+                user_keywords AS uk_otros ON uk_actual.keyword_id = uk_otros.keyword_id
+            JOIN
+                users AS u ON uk_otros.user_id = u.id
+            WHERE
+                uk_actual.user_id = :userId
+                AND uk_otros.user_id != :userId
+                AND uk_actual.keyword_type IN ('CAMPO_INVESTIGACION', 'LINEA_INTERES')
+                AND uk_otros.keyword_type IN ('CAMPO_INVESTIGACION', 'LINEA_INTERES')
+            GROUP BY
+                u.id, u.username
+            ORDER BY
+                commonKeywords DESC
+            LIMIT 20
+            """, nativeQuery = true)
     List<Object[]> findRecommendedUsersByRelevance(@Param("userId") Long userId);
 
     @Query(value = """
@@ -46,7 +62,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
                 u.username,
                 r.commonKeywords,
                 (earth_distance(
-                    ll_to_earth(:userLat, :userLon), -- Ubicación del usuario actual    
+                    ll_to_earth(:userLat, :userLon), -- Ubicación del usuario actual
                     ll_to_earth(u.latitud, u.longitud)    -- Ubicación del otro usuario
                 ) / 1000) AS distanciaEnKm -- Convertir metros a KM
             FROM

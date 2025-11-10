@@ -30,6 +30,13 @@ public class SecurityConfig {
     @Autowired
     private JwtUtils jwtUtils;
 
+    private static final String[] SWAGGER_UI_PATHS = {
+        "/v3/api-docs/**",
+        "/swagger-ui.html",
+        "/swagger-ui/**",
+        "/webjars/swagger-ui/**"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -41,6 +48,7 @@ public class SecurityConfig {
                     http.requestMatchers(HttpMethod.POST, "/auth/login").permitAll();
                     http.requestMatchers(HttpMethod.POST, "/auth/register").permitAll();
                     http.requestMatchers(HttpMethod.POST, "/auth/validate-token").permitAll();
+                    http.requestMatchers(SWAGGER_UI_PATHS).permitAll();
                     http.anyRequest().authenticated();
                 })
                 .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)

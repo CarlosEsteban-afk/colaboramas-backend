@@ -11,6 +11,7 @@ import java.util.Set;
 public class UserCardDTO {
     private Long id;
     private String username;
+    private String imageUrl;
     private Set<Educacion> historialEducativo;
     private String motivaciones;
     private String actividadesPersonales;

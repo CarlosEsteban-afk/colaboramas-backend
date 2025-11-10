@@ -31,11 +31,12 @@ public class ProfileService implements IProfileService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
-        // Actualizar campos de texto simples
         user.setMotivaciones(request.getMotivaciones());
         user.setActividadesPersonales(request.getActividadesPersonales());
         user.setProyectosRecientes(request.getProyectosRecientes());
 
+        user.setPais(request.getPais());
+        user.setCiudad(request.getCiudad());
         // Actualizar historial educativo
         if (request.getHistorialEducativo() != null) {
             user.getHistorialEducativo().clear();
@@ -94,6 +95,8 @@ public class ProfileService implements IProfileService {
         dto.setMotivaciones(user.getMotivaciones());
         dto.setActividadesPersonales(user.getActividadesPersonales());
         dto.setProyectosRecientes(user.getProyectosRecientes());
+        dto.setPais(user.getPais());
+        dto.setCiudad(user.getCiudad());
 
         dto.setHistorialEducativo(user.getHistorialEducativo().stream()
                 .map(this::toEducacionDto)
