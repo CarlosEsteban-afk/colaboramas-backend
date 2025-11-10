@@ -10,6 +10,8 @@ public class UserProfileResponseDto {
     private String email;
     private List<EducacionDto> historialEducativo;
     private List<KeywordDto> keywords;
+    private String pais;
+    private String ciudad;
     private String motivaciones;
     private String actividadesPersonales;
     private String proyectosRecientes;
