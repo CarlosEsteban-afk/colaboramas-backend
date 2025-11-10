@@ -1,5 +1,6 @@
 package com.agora.user.controller;
 
+import com.agora.user.dto.CompleteProfileDTO;
 import com.agora.user.dto.CreateUserRequest;
 import com.agora.user.dto.UserCardDTO;
 import com.agora.user.dto.UserDTO;
@@ -54,6 +55,15 @@ public class UserController {
         );
         return new UserDTO(user.getId(), user.getUsername());
     }
+    @PutMapping("/{userId}/complete-profile")
+    public ResponseEntity<UserDTO> completeProfile(
+            @PathVariable Long userId,
+            @RequestBody CompleteProfileDTO dto
+    ) {
+        User updatedUser = userService.completeUserProfile(userId, dto);
+        return ResponseEntity.ok(new UserDTO(updatedUser.getId(), updatedUser.getUsername()));
+    }
+
 
     @GetMapping("/cards")
     public List<UserCardDTO> getAllUserCards(Authentication auth) {
@@ -68,10 +78,4 @@ public class UserController {
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
-
-
-
-
-
-
 }

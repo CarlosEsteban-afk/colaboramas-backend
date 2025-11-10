@@ -27,7 +27,7 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(name="image_url")
+    @Column(name="image_url",length=1000)
     private String imageUrl;
 
     @Column(nullable = false)
