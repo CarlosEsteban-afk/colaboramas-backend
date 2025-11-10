@@ -32,6 +32,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(name = "orcid_id", unique = true)
+    private String orcidId;
+
     // --- Campos de Estado (como antes) ---
     @Column(name = "is_enabled")
     private Boolean isEnabled;
@@ -71,4 +74,3 @@ public class User {
     @Builder.Default
     private Set<Role> roles = new HashSet<>();
 }
-

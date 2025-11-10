@@ -20,10 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class AuthService {
@@ -96,5 +93,40 @@ public class AuthService {
         return new AuthResponse(user.getEmail(), "User created successfully", token, true);
     }
 
+    public AuthResponse loginWithOrcid(String orcidId) {
+        Optional<User> userOptional = userRepository.findByOrcidId(orcidId);
 
+        User user = userOptional.orElseGet(() -> {
+            Set<Role> roles = new HashSet<>(roleRepository.findRolesByRoleNameIn(Collections.singletonList(RoleEnum.USER)));
+
+            User newUser = User.builder()
+                    .username(orcidId)
+                    .email(orcidId + "@orcid.org")
+                    .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+                    .roles(roles)
+                    .orcidId(orcidId)
+                    .accountNoExpired(true)
+                    .accountNoLocked(true)
+                    .credentialNoExpired(true)
+                    .isEnabled(true)
+                    .build();
+
+            return userRepository.save(newUser);
+        });
+
+        ArrayList<SimpleGrantedAuthority> authorityList = new ArrayList<>();
+        user.getRoles().forEach(
+                role -> authorityList.add(new SimpleGrantedAuthority("ROLE_".concat(role.getRoleName().name()))));
+        user.getRoles()
+                .stream()
+                .flatMap(role -> role.getPermissionEntities().stream())
+                .forEach(permission -> authorityList
+                        .add(new SimpleGrantedAuthority(permission.getPermissionName().name())));
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword(),
+                authorityList);
+
+        String token = jwtUtils.createToken(authentication);
+
+        return new AuthResponse(user.getEmail(), "User logged successfully", token, true);
+    }
 }
