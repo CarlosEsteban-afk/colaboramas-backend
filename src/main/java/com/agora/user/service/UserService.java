@@ -2,13 +2,18 @@ package com.agora.user.service;
 
 import com.agora.auth.model.Role;
 import com.agora.auth.model.RoleEnum;
+import com.agora.user.dto.UpdateLocationRequest;
 import com.agora.user.dto.UserCardDTO;
 import com.agora.user.repository.RoleRepository;
 import com.agora.user.repository.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.agora.user.model.User;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -27,13 +32,29 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + email));
+    }
+
+    @Transactional
+    public void updateUserLocation(UpdateLocationRequest locationRequest) {
+        User currentUser = getCurrentUser();
+        currentUser.setLatitud(locationRequest.getLatitud());
+        currentUser.setLongitud(locationRequest.getLongitud());
+        userRepository.save(currentUser);
+    }
+
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     public User createUser(String username, String email, String password, Set<RoleEnum> roles) {
-        Set<Role> roleEntities = new HashSet<>(roleRepository.findRolesByRoleNameIn((List<RoleEnum>) roles));
+        Set<Role> roleEntities = new HashSet<>(roleRepository.findRolesByRoleNameIn(new ArrayList<>(roles)));
 
         if (roleEntities.isEmpty()) {
             throw new IllegalArgumentException("Roles not found");
