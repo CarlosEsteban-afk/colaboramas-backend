@@ -33,9 +33,8 @@ public class SearchService {
             username = ((UserDetails) authentication.getPrincipal()).getUsername();
         }
 
-        User currentUser = userRepository.findUserByUsername(username)
+        User currentUser = userRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
         Long userId = currentUser.getId();
 
         List<Object[]> results = userRepository.findRecommendedUsersByProximity(userId,
@@ -68,7 +67,8 @@ public class SearchService {
     private ProfileResponse buildProfileResponse(User user) {
         return ProfileResponse.builder()
                 .id(user.getId())
-                .nombre(user.getUsername()) 
+                .nombre(user.getUsername())
+                .imageUrl(user.getImageUrl())
                 .pais(user.getPais())
                 .ciudad(user.getCiudad())
                 .profesion(user.getHistorialEducativo().stream()

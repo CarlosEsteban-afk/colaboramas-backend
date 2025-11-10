@@ -78,6 +78,7 @@ public class UserService {
                 .map(u -> UserCardDTO.builder()
                         .id(u.getId())
                         .username(u.getUsername())
+                        .imageUrl(u.getImageUrl())
                         .historialEducativo(u.getHistorialEducativo())
                         .motivaciones(u.getMotivaciones())
                         .actividadesPersonales(u.getActividadesPersonales())
