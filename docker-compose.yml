@@ -1,16 +1,18 @@
 version: '3.8'
 
 services:
-  api:
+  api-service:
     build: .
-    container_name: api-service
     ports:
       - "8080:8080"
+    volumes:
+      - ./.env:/app/.env
     environment:
       SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/colabora
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: pass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
       # Actualizado para que la API se comunique con MinIO dentro de la red de Docker
       MINIO_ENDPOINT: http://minio:9000 
       MINIO_ACCESS-KEY: minioadmin

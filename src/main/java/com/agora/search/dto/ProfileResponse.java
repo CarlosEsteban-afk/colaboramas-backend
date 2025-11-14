@@ -14,6 +14,7 @@ import java.util.Set;
 public class ProfileResponse {
     private Long id;
     private String nombre;
+    private String imageUrl;
     private String pais;
     private String ciudad;
     private String profesion;
