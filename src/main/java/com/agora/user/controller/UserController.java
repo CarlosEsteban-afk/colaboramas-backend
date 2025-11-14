@@ -1,5 +1,6 @@
 package com.agora.user.controller;
 
+import com.agora.user.dto.CompleteProfileDTO;
 import com.agora.user.dto.CreateUserRequest;
 import com.agora.user.dto.UserCardDTO;
 import com.agora.user.dto.UserDTO;
@@ -22,16 +23,13 @@ import java.util.stream.Collectors;
 public class UserController {
     private final UserService userService;
     private final UserImageService userImageService;
-
     public UserController(UserService userService, UserImageService userImageService) {
         this.userService = userService;
         this.userImageService = userImageService;
     }
-
     @PostMapping("/upload-image/{userId}")
     public ResponseEntity<String> uploadImage(@PathVariable Long userId, @RequestParam("file") MultipartFile file) {
         try {
-            System.out.println(userId);
             String imageUrl = userImageService.uploadUserImage(file);
             userService.updateUserImageUrl(userId, imageUrl);
             return ResponseEntity.ok(imageUrl);
@@ -39,7 +37,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading image");
         }
     }
-
     @GetMapping
     public List<UserDTO> getAllUsers() {
         return userService.getAllUsers().stream().map(u -> new UserDTO(u.getId(), u.getUsername()))
@@ -57,11 +54,18 @@ public class UserController {
         );
         return new UserDTO(user.getId(), user.getUsername());
     }
+   /* @PutMapping("/{userId}/complete-profile")
+    public ResponseEntity<UserDTO> completeProfile(
+            @PathVariable Long userId,
+            @RequestBody CompleteProfileDTO dto
+    ) {
+        User updatedUser = userService.completeUserProfile(userId, dto);
+        return ResponseEntity.ok(new UserDTO(updatedUser.getId(), updatedUser.getUsername()));
+    }*/
 
 
     @GetMapping("/cards")
     public List<UserCardDTO> getAllUserCards(Authentication auth) {
-        System.out.println(auth.getPrincipal());
         return userService.getAllUserCards();
     }
 
