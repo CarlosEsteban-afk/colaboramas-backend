@@ -4,10 +4,10 @@ import com.agora.auth.dto.AuthCreateUserRequest;
 import com.agora.auth.dto.AuthLoginRequest;
 import com.agora.auth.dto.AuthResponse;
 import com.agora.auth.service.AuthService;
-import com.agora.auth.service.UserDetailsServiceImpl;
+import com.agora.exception.ResourceNotFoundException;
 import com.agora.user.dto.UserResponseDTO;
-import com.agora.user.repository.UserRepository;
 import com.agora.user.model.User;
+import com.agora.user.repository.UserRepository;
 import com.agora.user.service.UserService;
 import com.agora.util.JwtUtils;
 import com.auth0.jwt.interfaces.Claim;
@@ -16,12 +16,14 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -66,10 +68,10 @@ public class AuthController {
             String email = jwtUtils.extractUsername(decodedJWT);
 
             User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
 
             if (!user.getIsEnabled()) {
-                throw new RuntimeException("User is disabled");
+                throw new AccessDeniedException("User is disabled");
             }
 
             Claim authoritiesClaim = jwtUtils.getSpecificClaim(decodedJWT, "authorities");

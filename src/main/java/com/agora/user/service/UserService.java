@@ -2,6 +2,7 @@ package com.agora.user.service;
 
 import com.agora.auth.model.Role;
 import com.agora.auth.model.RoleEnum;
+import com.agora.exception.ResourceNotFoundException;
 import com.agora.user.dto.UpdateLocationRequest;
 import com.agora.user.dto.UserCardDTO;
 import com.agora.user.repository.RoleRepository;
@@ -16,7 +17,6 @@ import com.agora.user.model.User;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,7 +37,7 @@ public class UserService {
         String email = authentication.getName();
 
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con email: " + email));
     }
 
     @Transactional
@@ -50,7 +50,7 @@ public class UserService {
 
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con email: " + email));
     }
 
     public User createUser(String username, String email, String password, Set<RoleEnum> roles) {
@@ -81,14 +81,14 @@ public class UserService {
 
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + userId));
         user.setIsEnabled(false);
         userRepository.save(user);
     }
 
     public User findUserById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + userId));
     }
 
     public List<UserCardDTO> getAllUserCards() {
@@ -110,13 +110,9 @@ public class UserService {
 
 
     public User updateUserImageUrl(Long userId, String imageUrl) {
-        Optional<User> optionalUser = userRepository.findById(userId);
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + userId));
 
-        if (optionalUser.isEmpty()) {
-            throw new RuntimeException("Usuario no encontrado con id: " + userId);
-        }
-
-        User user = optionalUser.get();
         user.setImageUrl(imageUrl);
         return userRepository.save(user);
     }
