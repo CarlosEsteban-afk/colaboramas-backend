@@ -22,7 +22,7 @@ import com.agora.message.dto.MessageRequestDto;
 import com.agora.message.dto.MessageResponseDto;
 import com.agora.message.service.MessageService;
 @RestController
-@RequestMapping("/api/messages")
+@RequestMapping("/messages")
 @RequiredArgsConstructor
 public class MessageController {
 
