@@ -1,6 +1,6 @@
 package com.agora.event.controller;
 
-import com.agora.event.model.Event;
+import com.agora.event.dto.EventDTO;
 import com.agora.event.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ public class EventController {
     private EventService eventService;
 
     @GetMapping
-    public ResponseEntity<List<Event>> getAllEvents() {
+    public ResponseEntity<List<EventDTO>> getAllEvents() {
         return ResponseEntity.ok(eventService.getAllEvents());
     }
 }

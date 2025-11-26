@@ -14,4 +14,5 @@ public class EventDTO {
     private String ubication;
     private String description;
     private String createdBy; // Nombre del usuario o "Scraper"
+    private Long userId; // Id del usuario que creó el evento (agregado)
 }

@@ -13,6 +13,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -21,9 +23,11 @@ import java.util.Collection;
 public class JwtTokenValidator extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
+    private final UserDetailsService userDetailsService; // agregado
 
-    public JwtTokenValidator(JwtUtils jwtUtils) {
+    public JwtTokenValidator(JwtUtils jwtUtils, UserDetailsService userDetailsService) {
         this.jwtUtils = jwtUtils;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -43,7 +47,7 @@ public class JwtTokenValidator extends OncePerRequestFilter {
                 String stringAuthorities = jwtUtils.getSpecificClaim(decodedJWT, "authorities").asString();
 
                 Collection<? extends GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(stringAuthorities);
-                
+
                 // DEBUG
                 System.out.println("===== JWT VALIDATOR DEBUG =====");
                 System.out.println("Token recibido: " + jwtToken);
@@ -51,14 +55,13 @@ public class JwtTokenValidator extends OncePerRequestFilter {
                 System.out.println("Authorities: " + stringAuthorities.replace(",", ","));
                 System.out.println("================================");
 
+                // Cargar UserDetails real y ponerlo como principal
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
-                
-                // Usar el constructor de 3 argumentos para crear un token AUTENTICADO
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        username, null, authorities);
-
-                context.setAuthentication(authenticationToken);
+                context.setAuthentication(authentication);
                 SecurityContextHolder.setContext(context);
 
             } catch (JWTVerificationException e) {

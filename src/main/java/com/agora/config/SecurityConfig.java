@@ -59,7 +59,7 @@ public class SecurityConfig {
                     http.anyRequest().authenticated();
                 })
                 .authenticationManager(authenticationManager) // Configura el AuthenticationManager
-                .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenValidator(jwtUtils, userDetailsService), BasicAuthenticationFilter.class)
                 .build();
     }
 

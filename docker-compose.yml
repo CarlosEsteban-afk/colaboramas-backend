@@ -20,7 +20,6 @@ services:
       MINIO_ACCESS-KEY: minioadmin
       MINIO_SECRET-KEY: minioadmin
       # --- Variables de tu aplicación tomadas del .env ---
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_SECURITY_USER_NAME: admin
       SPRING_SECURITY_USER_PASSWORD: admin123
       # Nota: Los puntos (.) en los nombres de variables se reemplazan por guiones bajos (_)

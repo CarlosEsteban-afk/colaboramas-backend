@@ -22,8 +22,7 @@ public class EventService {
     public EventDTO createEvent(CreateEventRequest request) {
         User user = null;
         if (request.getUserId() != null) {
-            user = userRepository.findById(request.getUserId())
-                    .orElseThrow(() -> new RuntimeException("User not found")); // Manejar mejor la excepción
+            user = userRepository.findById(request.getUserId()).orElse(null);
         }
 
         Event event = Event.builder()
@@ -32,7 +31,7 @@ public class EventService {
                 .date(request.getDate())
                 .ubication(request.getUbication())
                 .description(request.getDescription())
-                .user(user) // Puede ser null
+                .user(user)
                 .build();
 
         Event savedEvent = eventRepository.save(event);
@@ -54,8 +53,9 @@ public class EventService {
         dto.setDate(event.getDate());
         dto.setUbication(event.getUbication());
         dto.setDescription(event.getDescription());
-        // Si el usuario no es nulo, usa su nombre, si no, "Scraper"
-        dto.setCreatedBy(event.getUser() != null ? event.getUser().getUsername() : "Scraper");
+        if (event.getUser() != null) {
+            dto.setUserId(event.getUser().getId());
+        }
         return dto;
     }
 }
