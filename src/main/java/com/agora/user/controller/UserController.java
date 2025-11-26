@@ -69,7 +69,6 @@ public class UserController {
 
     @GetMapping("/cards")
     public List<UserCardDTO> getAllUserCards(Authentication auth) {
-        System.out.println(auth.getPrincipal());
         return userService.getAllUserCards();
     }
 

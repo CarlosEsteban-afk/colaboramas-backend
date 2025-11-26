@@ -54,6 +54,7 @@ public class SecurityConfig {
                     http.requestMatchers(HttpMethod.POST, "/auth/login").permitAll();
                     http.requestMatchers(HttpMethod.POST, "/auth/register").permitAll();
                     http.requestMatchers(HttpMethod.POST, "/auth/validate-token").permitAll();
+                    http.requestMatchers("/api/events/**").permitAll();
                     http.requestMatchers(SWAGGER_UI_PATHS).permitAll();
                     http.anyRequest().authenticated();
                 })

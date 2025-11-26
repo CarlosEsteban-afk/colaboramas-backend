@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import com.agora.auth.model.RoleEnum;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -80,5 +81,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("userId") Long userId,
             @Param("userLat") Double userLat,
             @Param("userLon") Double userLon);
+
+    // Count users that have a specific role (RoleEnum)
+    long countByRolesRoleName(RoleEnum roleName);
+
+    // Count users grouped by country
+    @Query("SELECT u.pais, COUNT(u) FROM User u WHERE u.pais IS NOT NULL GROUP BY u.pais ORDER BY COUNT(u) DESC")
+    List<Object[]> countUsersByCountry();
 
 }
