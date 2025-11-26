@@ -23,6 +23,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -37,6 +40,9 @@ public class AuthController {
     private UserRepository userRepository;
     @Autowired
     private UserService userService;
+
+    // Este archivo actúa como controlador para endpoints de autenticación.
+    // La configuración de seguridad real está en `com.agora.config.SecurityConfig`.
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthLoginRequest userRequest) {
