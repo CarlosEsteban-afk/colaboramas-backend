@@ -4,6 +4,8 @@ import com.agora.message.dto.MessageRequestDto;
 import com.agora.message.dto.MessageResponseDto;
 import com.agora.message.model.Message;
 import com.agora.message.repository.MessageRepository;
+import com.agora.user.model.User;
+import com.agora.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +17,10 @@ import java.util.List;
 public class MessageService {
 
     private final MessageRepository repo;
-
+    private final UserRepository userRepository;
+    private final EmailService emailService;
     public MessageResponseDto sendMessage(MessageRequestDto dto) {
-
+        // 1️⃣ Guardamos el mensaje en BD
         Message m = new Message();
         m.setFromUserId(dto.getFromUserId());
         m.setToUserId(dto.getToUserId());
@@ -28,9 +31,39 @@ public class MessageService {
         m.setUpdatedAt(Instant.now());
 
         Message saved = repo.save(m);
+
+        User destinatario = userRepository.findById(dto.getToUserId()).orElse(null);
+        User remitente = userRepository.findById(dto.getFromUserId()).orElse(null);
+
+        if(destinatario != null && destinatario.getEmail() != null) {
+            String logoUrl = "https://logowik.com/content/uploads/images/agora7391.logowik.com.webp";
+            String aceptarUrl = "https://miapp.com/messages/" + saved.getId() + "/respond?status=accepted";
+            String rechazarUrl = "https://miapp.com/messages/" + saved.getId() + "/respond?status=rejected";
+
+            String html = "<html>"
+                    + "<body style='font-family:Arial,sans-serif;color:#333;'>"
+                    + "<div style='text-align:center;'>"
+                    + "<img src='" + logoUrl + "' alt='Agora' width='150' style='margin-bottom:20px;'/>"
+                    + "<h2>¡Has recibido un mensaje en Agora!</h2>"
+                    + "<p>De: <strong>" + (remitente != null ? remitente.getUsername() : "Usuario") + "</strong></p>"
+                    + "<p>Asunto: <strong>" + dto.getSubject() + "</strong></p>"
+                    + "<p>Mensaje: " + dto.getMessage() + "</p>"
+                    + "<div style='margin-top:30px;'>"
+                    + "<a href='" + aceptarUrl + "' style='padding:10px 20px;background-color:#4CAF50;color:white;text-decoration:none;margin-right:10px;border-radius:5px;'>Aceptar</a>"
+                    + "<a href='" + rechazarUrl + "' style='padding:10px 20px;background-color:#f44336;color:white;text-decoration:none;border-radius:5px;'>Rechazar</a>"
+                    + "</div>"
+                    + "</div>"
+                    + "</body>"
+                    + "</html>";
+
+            emailService.enviarCorreo("o.millalonco05@gmail.com",
+                    "Alguien te ha contactado en Agora",
+                    html);
+        }
+
+
         return toResponseDto(saved);
     }
-
 
     public List<MessageResponseDto> getReceived(Long userId) {
         return repo.findByToUserIdOrderByCreatedAtDesc(userId)
