@@ -3,6 +3,7 @@ package com.agora.user.model;
 import com.agora.tag.model.Keyword;
 import com.agora.tag.model.KeywordType;
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 @Setter
@@ -22,6 +23,7 @@ public class UserKeyword {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

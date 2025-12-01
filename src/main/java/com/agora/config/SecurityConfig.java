@@ -56,6 +56,8 @@ public class SecurityConfig {
                     http.requestMatchers(HttpMethod.POST, "/auth/validate-token").permitAll();
                     http.requestMatchers("/api/events/**").permitAll();
                     http.requestMatchers(SWAGGER_UI_PATHS).permitAll();
+                    // Permitir accesos a endpoints de administración temporalmente (ajustar según entorno)
+                    http.requestMatchers("/admin/**", "/api/admin/**").permitAll();
                     http.anyRequest().authenticated();
                 })
                 .authenticationManager(authenticationManager) // Configura el AuthenticationManager
