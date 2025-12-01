@@ -4,6 +4,7 @@ import com.agora.message.dto.MessageRequestDto;
 import com.agora.message.dto.MessageResponseDto;
 import com.agora.message.model.Message;
 import com.agora.message.repository.MessageRepository;
+import com.agora.user.dto.UserSummaryDTO;
 import com.agora.user.model.User;
 import com.agora.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ public class MessageService {
     private final MessageRepository repo;
     private final UserRepository userRepository;
     private final EmailService emailService;
+
     public MessageResponseDto sendMessage(MessageRequestDto dto) {
         // 1️⃣ Guardamos el mensaje en BD
         Message m = new Message();
@@ -35,7 +37,7 @@ public class MessageService {
         User destinatario = userRepository.findById(dto.getToUserId()).orElse(null);
         User remitente = userRepository.findById(dto.getFromUserId()).orElse(null);
 
-        if(destinatario != null && destinatario.getEmail() != null) {
+        if (destinatario != null && destinatario.getEmail() != null) {
             String logoUrl = "https://logowik.com/content/uploads/images/agora7391.logowik.com.webp";
             String aceptarUrl = "https://miapp.com/messages/" + saved.getId() + "/respond?status=accepted";
             String rechazarUrl = "https://miapp.com/messages/" + saved.getId() + "/respond?status=rejected";
@@ -92,7 +94,6 @@ public class MessageService {
         return toResponseDto(saved);
     }
 
-
     private MessageResponseDto toResponseDto(Message m) {
         MessageResponseDto r = new MessageResponseDto();
         r.setId(m.getId());
@@ -102,6 +103,30 @@ public class MessageService {
         r.setMessage(m.getBody());
         r.setStatus(m.getStatus());
         r.setCreatedAt(m.getCreatedAt());
+
+        // Información resumida del remitente
+        User remitente = userRepository.findById(m.getFromUserId()).orElse(null);
+        if (remitente != null) {
+            r.setFromUser(new UserSummaryDTO(
+                    remitente.getId(),
+                    remitente.getUsername(),
+                    remitente.getEmail(),
+                    remitente.getImageUrl()
+            ));
+        }
+
+        // Información resumida del destinatario
+        User destinatario = userRepository.findById(m.getToUserId()).orElse(null);
+        if (destinatario != null) {
+            r.setToUser(new UserSummaryDTO(
+                    destinatario.getId(),
+                    destinatario.getUsername(),
+                    destinatario.getEmail(),
+                    destinatario.getImageUrl()
+            ));
+        }
+
         return r;
     }
+
 }

@@ -1,5 +1,6 @@
 package com.agora.message.dto;
 
+import com.agora.user.dto.UserSummaryDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -15,6 +16,8 @@ public class MessageRequestDto {
 
     @NotBlank
     private String message;
+
+
 
     // getters / setters
     public Long getFromUserId() { return fromUserId; }

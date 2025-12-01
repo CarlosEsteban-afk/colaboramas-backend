@@ -1,6 +1,9 @@
 package com.agora.message.dto;
-import java.time.Instant;
+import com.agora.user.dto.UserSummaryDTO;
+import lombok.Data;
 
+import java.time.Instant;
+@Data
 public class MessageResponseDto {
 
     private Long id;
@@ -10,6 +13,8 @@ public class MessageResponseDto {
     private String message;
     private String status;
     private Instant createdAt;
+    private UserSummaryDTO fromUser;
+    private UserSummaryDTO toUser;
 
     // GETTERS & SETTERS
     public Long getId() { return id; }
