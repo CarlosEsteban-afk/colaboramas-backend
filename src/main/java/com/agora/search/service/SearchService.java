@@ -1,5 +1,6 @@
 package com.agora.search.service;
 
+import com.agora.message.service.UserInteractionService;
 import com.agora.profile.model.Educacion;
 import com.agora.search.dto.ProfileResponse;
 import com.agora.user.model.User;
@@ -27,6 +28,7 @@ public class SearchService {
     private final UserRepository userRepository;
     private final UserKeywordRepository userKeywordRepository;
     private final EducacionRepository educacionRepository;
+    private final UserInteractionService userInteractionService;
 
     @Transactional(readOnly = true)
     public List<ProfileResponse> recommendProfiles() {
@@ -37,8 +39,17 @@ public class SearchService {
                 userId,
                 currentUser.getLatitud(),
                 currentUser.getLongitud());
-        
-        return buildProfileResponsesFromResults(results);
+
+        List<Long> contacted = userInteractionService.getUsersContacted(userId);
+
+        List<Object[]> filtered = results.stream()
+                .filter(r -> {
+                    Long recommendedId = ((Number) r[0]).longValue();
+                    return !contacted.contains(recommendedId);
+                })
+                .toList();
+
+        return buildProfileResponsesFromResults(filtered);
     }
 
     @Transactional(readOnly = true)
@@ -48,13 +59,24 @@ public class SearchService {
 
         List<Object[]> results = userRepository.findRecommendedUsersByRelevance(userId);
 
+        List<Long> contacted = userInteractionService.getUsersContacted(userId);
+
+        // 3. filtrar resultados
+        List<Object[]> filtered = results.stream()
+                .filter(r -> {
+                    Long recommendedId = ((Number) r[0]).longValue();
+                    return !contacted.contains(recommendedId);
+                })
+                .toList();
+
+
         return buildProfileResponsesFromResults(results);
     }
 
     /**
      * Este método privado resuelve el problema N+1
      */
-  private List<ProfileResponse> buildProfileResponsesFromResults(List<Object[]> results) {
+    private List<ProfileResponse> buildProfileResponsesFromResults(List<Object[]> results) {
         if (results.isEmpty()) {
             return List.of();
         }
@@ -71,7 +93,7 @@ public class SearchService {
         // 3. Agrupar colecciones por usuario para acceso rápido
         Map<Long, Set<UserKeyword>> keywordsByUserId = allKeywords.stream()
                 .collect(Collectors.groupingBy(kw -> kw.getUser().getId(), Collectors.toSet()));
-        
+
         Map<Long, Educacion> educacionByUserId = allEducacion.stream()
                 .collect(Collectors.toMap(edu -> edu.getUser().getId(), Function.identity()));
 
@@ -117,7 +139,7 @@ public class SearchService {
     private User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        
+
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + email));
     }

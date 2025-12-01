@@ -1,5 +1,9 @@
 package com.agora.message.controller;
 
+import com.agora.message.model.Message;
+import com.agora.message.model.UserInteraction;
+import com.agora.message.repository.UserInteractionRepository;
+import com.agora.message.service.UserInteractionService;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,12 +31,14 @@ import com.agora.message.service.MessageService;
 public class MessageController {
 
     private final MessageService messageService;
+    private final UserInteractionService userInteractionService;
 
     @PostMapping("/send")
     public ResponseEntity<MessageResponseDto> send(
             @Valid @RequestBody MessageRequestDto dto
     ) {
         MessageResponseDto res = messageService.sendMessage(dto);
+        userInteractionService.registerContact(dto.getFromUserId(), dto.getToUserId());
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 
