@@ -53,7 +53,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    @JsonManagedReference
+    @JsonManagedReference(value = "user-keywords")
     private Set<UserKeyword> keywords = new HashSet<>();
 
     @Column(columnDefinition = "TEXT")

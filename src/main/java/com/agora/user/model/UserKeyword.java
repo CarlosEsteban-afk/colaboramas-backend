@@ -28,6 +28,7 @@ public class UserKeyword {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "keyword_id")
+    @JsonBackReference(value = "keyword-userLinks")
     private Keyword keyword;
 
     @Enumerated(EnumType.STRING)
