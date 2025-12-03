@@ -21,7 +21,7 @@ public class MessageService {
     private final MessageRepository repo;
     private final UserRepository userRepository;
     private final EmailService emailService;
-    private final SimpMessagingTemplate messagingTemplate; // 🔹 WebSocket
+   // private final SimpMessagingTemplate messagingTemplate; // 🔹 WebSocket
 
     public MessageResponseDto sendMessage(MessageRequestDto dto) {
         // Guardar mensaje en BD
@@ -43,7 +43,7 @@ public class MessageService {
         MessageResponseDto response = toResponseDto(saved);
 
         // 🔹 Notificación WebSocket al destinatario
-        messagingTemplate.convertAndSend("/topic/messages/" + dto.getToUserId(), response);
+       // messagingTemplate.convertAndSend("/topic/messages/" + dto.getToUserId(), response);
 
         return response;
     }
@@ -72,7 +72,7 @@ public class MessageService {
         Message saved = repo.save(m);
 
         // 🔹 Opcional: enviar notificación en tiempo real del cambio de estado
-        messagingTemplate.convertAndSend("/topic/messages/" + saved.getToUserId(), toResponseDto(saved));
+       // messagingTemplate.convertAndSend("/topic/messages/" + saved.getToUserId(), toResponseDto(saved));
 
         return toResponseDto(saved);
     }
