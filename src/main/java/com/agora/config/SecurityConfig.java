@@ -52,9 +52,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(http -> {
                     // Endpoints públicos (sin autenticación requerida)
-                    http.requestMatchers(HttpMethod.POST, "/auth/login").permitAll();
-                    http.requestMatchers(HttpMethod.POST, "/auth/register").permitAll();
-                    http.requestMatchers(HttpMethod.POST, "/auth/validate-token").permitAll();
+                    http.requestMatchers("/auth/**").permitAll();
                     http.requestMatchers("/events/**").permitAll();
                     http.requestMatchers(SWAGGER_UI_PATHS).permitAll();
                     http.requestMatchers("/error").permitAll();

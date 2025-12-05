@@ -51,8 +51,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthLoginRequest userRequest) {
-        AuthResponse response = authService.loginUser(userRequest);
-        return ResponseEntity.ok(response);
+        try {
+            AuthResponse response = authService.loginUser(userRequest);
+            return ResponseEntity.ok(response);
+        } catch (org.springframework.security.core.AuthenticationException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthResponse(null, ex.getMessage(), null, false));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new AuthResponse(null, ex.getMessage(), null, false));
+        }
     }
 
     @PostMapping("/register")
