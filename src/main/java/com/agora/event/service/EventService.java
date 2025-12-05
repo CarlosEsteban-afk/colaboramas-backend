@@ -45,7 +45,7 @@ public class EventService {
     }
 
     // Convierte una entidad Event a un EventDTO
-    private EventDTO toDTO(Event event) {
+    public EventDTO toDTO(Event event) {
         EventDTO dto = new EventDTO();
         dto.setId(event.getId());
         dto.setTitle(event.getTitle());
@@ -53,6 +53,7 @@ public class EventService {
         dto.setDate(event.getDate());
         dto.setUbication(event.getUbication());
         dto.setDescription(event.getDescription());
+        dto.setImageUrl(event.getImageUrl());
         if (event.getUser() != null) {
             dto.setUserId(event.getUser().getId());
         }

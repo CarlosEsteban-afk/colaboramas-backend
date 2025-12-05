@@ -2,6 +2,7 @@ package com.agora.event.dto;
 
 import com.agora.event.model.EventType;
 import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
 // Para enviar los datos de un evento al cliente.
@@ -15,4 +16,10 @@ public class EventDTO {
     private String description;
     private String createdBy; // Nombre del usuario o "Scraper"
     private Long userId; // Id del usuario que creó el evento (agregado)
+    private String imageUrl; // URL de la imagen del evento
+
+    @JsonProperty("image_url")
+    public String getImage_url() {
+        return this.imageUrl;
+    }
 }

@@ -9,6 +9,8 @@ import com.agora.user.repository.UserRepository;
 import com.agora.user.repository.RoleRepository;
 import com.agora.event.repository.EventRepository;
 import com.agora.event.model.Event;
+import com.agora.event.dto.EventDTO;
+import com.agora.event.service.EventService;
 import com.agora.event.model.EventType;
 import com.agora.auth.model.Role;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,9 @@ public class AdminService {
 
     @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private EventService eventService;
 
     @Transactional
     public AdminStats refreshStats() {
@@ -135,12 +140,15 @@ public class AdminService {
     }
 
     // --- Events management ---
-    public java.util.List<Event> getAllEvents() {
-        return eventRepository.findAll();
+    public java.util.List<EventDTO> getAllEvents() {
+        return eventRepository.findAll().stream()
+                .map(eventService::toDTO)
+                .toList();
     }
 
-    public Event getEventById(Long id) {
-        return eventRepository.findById(id).orElseThrow(() -> new RuntimeException("Event not found"));
+    public EventDTO getEventById(Long id) {
+        Event e = eventRepository.findById(id).orElseThrow(() -> new RuntimeException("Event not found"));
+        return eventService.toDTO(e);
     }
 
     public long getEventsNumber() {

@@ -119,13 +119,13 @@ public class AdminController {
     
     // GET /admin/events - Get all events
     @GetMapping("/events")
-    public ResponseEntity<List<Event>> getAllEvents() {
+    public ResponseEntity<List<com.agora.event.dto.EventDTO>> getAllEvents() {
         return ResponseEntity.ok(adminService.getAllEvents());
     }
 
     // GET /admin/events/{id} - Get event by ID
     @GetMapping("/events/{id}")
-    public ResponseEntity<Event> getEventById(@PathVariable Long id) {
+    public ResponseEntity<com.agora.event.dto.EventDTO> getEventById(@PathVariable Long id) {
         return ResponseEntity.ok(adminService.getEventById(id));
     }
 

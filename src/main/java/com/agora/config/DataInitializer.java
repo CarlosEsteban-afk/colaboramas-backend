@@ -506,7 +506,7 @@ public class DataInitializer {
                         .date(java.time.LocalDateTime.now().plusDays(30))
                         .ubication("Centro de Convenciones")
                         .description("Congreso internacional sobre avances en biología molecular.")
-                        .imageUrl("https://images.unsplash.com/photo-1549112985-3a2f4a4b0f7b")
+                        .imageUrl("https://images.unsplash.com/photo-1522199710521-72d69614c702?auto=format&fit=crop&w=800&q=80")
                         .user(carlosOpt.orElse(null))
                         .isEnabled(true)
                         .build();
@@ -524,6 +524,39 @@ public class DataInitializer {
                         .build();
                 eventRepository.save(ev3);
             }
+
+                        // Asegurarse de que todos los eventos tengan una imageUrl (usar placeholder por tipo si falta)
+                        var allEvents = eventRepository.findAll();
+                        boolean changed = false;
+                        for (Event e : allEvents) {
+                                // Force-replace the image for the seeded 'Congreso de Biología Molecular' (evento 2)
+                                if ("Congreso de Biología Molecular".equals(e.getTitle())) {
+                                        String newImg = "https://images.unsplash.com/photo-1522199710521-72d69614c702?auto=format&fit=crop&w=800&q=80";
+                                        if (!newImg.equals(e.getImageUrl())) {
+                                                e.setImageUrl(newImg);
+                                                changed = true;
+                                        }
+                                        continue; // we updated or ensured this one
+                                }
+
+                                if (e.getImageUrl() == null || e.getImageUrl().isBlank()) {
+                                        String defaultImg;
+                                        if (e.getType() == EventType.CHARLA) {
+                                                defaultImg = "https://images.unsplash.com/photo-1509062522246-3755977927d7";
+                                        } else if (e.getType() == EventType.CONGRESO) {
+                                                defaultImg = "https://images.unsplash.com/photo-1517430816045-df4b7de11d1d";
+                                        } else if (e.getType() == EventType.CONCURSO) {
+                                                defaultImg = "https://images.unsplash.com/photo-1526312426976-3d4e0aa5b0c9";
+                                        } else {
+                                                defaultImg = "https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d";
+                                        }
+                                        e.setImageUrl(defaultImg);
+                                        changed = true;
+                                }
+                        }
+                        if (changed) {
+                                eventRepository.saveAll(allEvents);
+                        }
         };
     }
 
