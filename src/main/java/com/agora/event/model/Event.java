@@ -35,6 +35,8 @@ public class Event {
     @Lob // Para textos largos
     private String description;
 
+    @Column(name = "image_url")
+    private String imageUrl;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = true) // nullable=true hace que la relación sea opcional
     private User user;

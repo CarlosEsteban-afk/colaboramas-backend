@@ -7,6 +7,9 @@ import com.agora.profile.model.Educacion;
 import com.agora.tag.model.Keyword;
 import com.agora.tag.model.KeywordType;
 import com.agora.tag.repository.KeywordRepository;
+import com.agora.event.model.Event;
+import com.agora.event.model.EventType;
+import com.agora.event.repository.EventRepository;
 import com.agora.user.repository.RoleRepository;
 import com.agora.user.repository.UserRepository;
 import com.agora.auth.model.Role;
@@ -31,7 +34,8 @@ public class DataInitializer {
             UserRepository userRepository,
             RoleRepository roleRepository,
             PermissionRepository permissionRepository,
-            KeywordRepository keywordRepository
+            KeywordRepository keywordRepository,
+            EventRepository eventRepository
     ) {
         return args -> {
             // --- 1. Creación de Permisos y Roles ---
@@ -476,6 +480,49 @@ public class DataInitializer {
                 addKeywordsToUser(ricardo, keywordRepository, KeywordType.CAMPO_INVESTIGACION, "Antropología Digital");
                 addKeywordsToUser(ricardo, keywordRepository, KeywordType.LINEA_INTERES, "Educación");
                 userRepository.save(ricardo);
+            }
+
+            // --- 4. Eventos de ejemplo ---
+            if (eventRepository.count() == 0) {
+                var anaOpt = userRepository.findByEmail("ana.gomez@email.com");
+                var carlosOpt = userRepository.findByEmail("carlos.ruiz@email.com");
+                var sofiaOpt = userRepository.findByEmail("sofia.torres@email.com");
+
+                Event ev1 = Event.builder()
+                        .title("Charla: IA y Sociedad")
+                        .type(EventType.CHARLA)
+                        .date(java.time.LocalDateTime.now().plusDays(10))
+                        .ubication("Auditorio Central")
+                        .description("Una charla sobre los impactos sociales y éticos de la Inteligencia Artificial.")
+                        .imageUrl("https://images.unsplash.com/photo-1529333166437-7750a6dd5a70")
+                        .user(anaOpt.orElse(null))
+                        .isEnabled(true)
+                        .build();
+                eventRepository.save(ev1);
+
+                Event ev2 = Event.builder()
+                        .title("Congreso de Biología Molecular")
+                        .type(EventType.CONGRESO)
+                        .date(java.time.LocalDateTime.now().plusDays(30))
+                        .ubication("Centro de Convenciones")
+                        .description("Congreso internacional sobre avances en biología molecular.")
+                        .imageUrl("https://images.unsplash.com/photo-1549112985-3a2f4a4b0f7b")
+                        .user(carlosOpt.orElse(null))
+                        .isEnabled(true)
+                        .build();
+                eventRepository.save(ev2);
+
+                Event ev3 = Event.builder()
+                        .title("Festival de Divulgación Científica")
+                        .type(EventType.CONCURSO)
+                        .date(java.time.LocalDateTime.now().plusDays(20))
+                        .ubication("Plaza Central")
+                        .description("Actividades y stands para acercar la ciencia a la comunidad.")
+                        .imageUrl("https://images.unsplash.com/photo-1503387762-592deb58ef4e")
+                        .user(sofiaOpt.orElse(null))
+                        .isEnabled(true)
+                        .build();
+                eventRepository.save(ev3);
             }
         };
     }
