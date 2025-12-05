@@ -4,6 +4,7 @@ import com.agora.admin.model.AdminStats;
 import com.agora.admin.model.CountryCount;
 import com.agora.admin.service.AdminService;
 import com.agora.admin.dto.ChangeRoleRequest;
+import com.agora.admin.dto.ChangeEventTypeRequest;
 import com.agora.event.model.Event;
 import com.agora.user.model.User;
 import com.agora.event.model.EventType;
@@ -151,7 +152,15 @@ public class AdminController {
     // PATCH /admin/events/{id}/type - Change event type
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/events/{id}/type")
-    public ResponseEntity<Event> changeEventType(@PathVariable Long id, @RequestParam("type") EventType type) {
+    public ResponseEntity<Event> changeEventType(
+            @PathVariable Long id,
+            @RequestParam(value = "type", required = false) EventType typeParam,
+            @RequestBody(required = false) ChangeEventTypeRequest typeBody) {
+
+        EventType type = typeParam != null ? typeParam : (typeBody != null ? typeBody.getType() : null);
+        if (type == null) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok(adminService.changeEventType(id, type));
     }
 }
