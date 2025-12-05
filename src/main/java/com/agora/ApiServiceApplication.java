@@ -1,7 +1,6 @@
 package com.agora;
 
 
-import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -20,5 +19,7 @@ public class ApiServiceApplication {
         System.setProperty("SECURITY.JWT.KEY.PRIVATE", dotenv.get("SECURITY.JWT.KEY.PRIVATE"));
         SpringApplication.run(ApiServiceApplication.class, args);
     }
+
+
 }
 
