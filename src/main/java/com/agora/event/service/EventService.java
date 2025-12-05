@@ -9,6 +9,7 @@ import com.agora.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,7 +55,18 @@ public class EventService {
         dto.setUbication(event.getUbication());
         dto.setDescription(event.getDescription());
         dto.setImageUrl(event.getImageUrl());
-        dto.setIsEnabled(event.getIsEnabled());
+        // If the event date is in the past, ensure it is disabled and persist the change
+        Boolean enabled = event.getIsEnabled();
+        if (event.getDate() != null && event.getDate().isBefore(LocalDateTime.now())) {
+            if (!Boolean.FALSE.equals(enabled)) {
+                // persist change to mark as disabled
+                event.setIsEnabled(false);
+                eventRepository.save(event);
+            }
+            dto.setIsEnabled(false);
+        } else {
+            dto.setIsEnabled(enabled);
+        }
         if (event.getUser() != null) {
             dto.setUserId(event.getUser().getId());
         }
