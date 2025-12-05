@@ -15,6 +15,8 @@ import com.agora.event.model.EventType;
 import com.agora.auth.model.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -147,7 +149,8 @@ public class AdminService {
     }
 
     public EventDTO getEventById(Long id) {
-        Event e = eventRepository.findById(id).orElseThrow(() -> new RuntimeException("Event not found"));
+        Event e = eventRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
         return eventService.toDTO(e);
     }
 
@@ -180,17 +183,21 @@ public class AdminService {
     }
 
     @Transactional
-    public Event banEvent(Long id, Boolean enabled) {
-        Event event = eventRepository.findById(id).orElseThrow(() -> new RuntimeException("Event not found"));
+    public EventDTO banEvent(Long id, Boolean enabled) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
         if (enabled != null) event.setIsEnabled(enabled);
         else event.setIsEnabled(!Boolean.TRUE.equals(event.getIsEnabled()));
-        return eventRepository.save(event);
+        Event saved = eventRepository.save(event);
+        return eventService.toDTO(saved);
     }
 
     @Transactional
-    public Event changeEventType(Long id, EventType newType) {
-        Event event = eventRepository.findById(id).orElseThrow(() -> new RuntimeException("Event not found"));
+    public EventDTO changeEventType(Long id, EventType newType) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
         event.setType(newType);
-        return eventRepository.save(event);
+        Event saved = eventRepository.save(event);
+        return eventService.toDTO(saved);
     }
 }

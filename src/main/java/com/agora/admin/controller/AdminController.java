@@ -5,7 +5,7 @@ import com.agora.admin.model.CountryCount;
 import com.agora.admin.service.AdminService;
 import com.agora.admin.dto.ChangeRoleRequest;
 import com.agora.admin.dto.ChangeEventTypeRequest;
-import com.agora.event.model.Event;
+// returning DTOs for events to avoid serializing JPA proxies
 import com.agora.user.model.User;
 import com.agora.event.model.EventType;
 import com.agora.auth.model.RoleEnum;
@@ -145,14 +145,14 @@ public class AdminController {
     // PATCH /admin/events/{id}/ban - Ban/unban event
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/events/{id}/ban")
-    public ResponseEntity<Event> banEvent(@PathVariable Long id, @RequestParam(name = "enabled", required = false) Boolean enabled) {
+    public ResponseEntity<com.agora.event.dto.EventDTO> banEvent(@PathVariable Long id, @RequestParam(name = "enabled", required = false) Boolean enabled) {
         return ResponseEntity.ok(adminService.banEvent(id, enabled));
     }
 
     // PATCH /admin/events/{id}/type - Change event type
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/events/{id}/type")
-    public ResponseEntity<Event> changeEventType(
+    public ResponseEntity<com.agora.event.dto.EventDTO> changeEventType(
             @PathVariable Long id,
             @RequestParam(value = "type", required = false) EventType typeParam,
             @RequestBody(required = false) ChangeEventTypeRequest typeBody) {
