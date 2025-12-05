@@ -17,9 +17,15 @@ public class EventDTO {
     private String createdBy; // Nombre del usuario o "Scraper"
     private Long userId; // Id del usuario que creó el evento (agregado)
     private String imageUrl; // URL de la imagen del evento
+    private Boolean isEnabled;
 
     @JsonProperty("image_url")
     public String getImage_url() {
         return this.imageUrl;
+    }
+
+    @JsonProperty("is_enabled")
+    public Boolean getIsEnabled() {
+        return this.isEnabled;
     }
 }

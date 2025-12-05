@@ -40,8 +40,7 @@ public class Event {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = true) // nullable=true hace que la relación sea opcional
     private User user;
-
-    @Column(name = "is_enabled")
-    @Builder.Default
-    private Boolean isEnabled = true;
+    
+ @Column(name = "is_enabled")
+    private Boolean isEnabled;
 }

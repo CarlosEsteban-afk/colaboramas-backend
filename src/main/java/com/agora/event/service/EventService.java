@@ -54,6 +54,7 @@ public class EventService {
         dto.setUbication(event.getUbication());
         dto.setDescription(event.getDescription());
         dto.setImageUrl(event.getImageUrl());
+        dto.setIsEnabled(event.getIsEnabled());
         if (event.getUser() != null) {
             dto.setUserId(event.getUser().getId());
         }
