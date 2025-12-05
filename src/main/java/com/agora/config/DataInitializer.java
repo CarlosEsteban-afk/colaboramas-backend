@@ -56,6 +56,12 @@ public class DataInitializer {
                             .permissionEntities(allPermissions)
                             .build()));
 
+            Role adminRole = roleRepository.findByRoleName(RoleEnum.ADMIN)
+                    .orElseGet(() -> roleRepository.save(Role.builder()
+                            .roleName(RoleEnum.ADMIN)
+                            .permissionEntities(allPermissions)
+                            .build()));
+
             // --- 2. Creación de Keywords Maestras (solo nombres) ---
             List<String> keywordNames = List.of(
                     "Inteligencia Artificial", "Machine Learning", "Biología Molecular",
@@ -69,6 +75,25 @@ public class DataInitializer {
 
             // --- 3. Creación de Usuarios de Prueba ---
             var encoder = new BCryptPasswordEncoder();
+
+            // Usuario Admin: Administrador del Sistema
+            if (userRepository.findByEmail("admin@agora.com").isEmpty()) {
+                User admin = User.builder()
+                        .username("Administrador")
+                        .email("admin@agora.com")
+                        .imageUrl("https://cdn-icons-png.flaticon.com/512/1177/1177568.png")
+                        .password(encoder.encode("Admin123!"))
+                        .roles(Set.of(adminRole))
+                        .pais("Argentina").ciudad("Buenos Aires")
+                        .latitud(-34.6037).longitud(-58.3816)
+                        .motivaciones("Gestión y administración de la plataforma Ágora.")
+                        .accountNoExpired(true).accountNoLocked(true).credentialNoExpired(true).isEnabled(true)
+                        .build();
+
+                admin.addEducacion(Educacion.builder().institucion("Sistema").titulo("Administrador").build());
+                userRepository.save(admin);
+                System.out.println("✅ Usuario ADMIN creado: admin@agora.com / Admin123!");
+            }
 
             // Usuario 1: Ana Gómez
             if (userRepository.findByEmail("ana.gomez@email.com").isEmpty()) {

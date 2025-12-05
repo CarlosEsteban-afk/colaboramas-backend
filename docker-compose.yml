@@ -17,8 +17,8 @@ services:
       # Actualizado para que la API se comunique con MinIO dentro de la red de Docker
       # --- Variables para la conexión a MinIO dentro de Docker ---
       MINIO_ENDPOINT: http://minio:9000 
-      MINIO_ACCESS-KEY: minioadmin
-      MINIO_SECRET-KEY: minioadmin
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
       # --- Variables de tu aplicación tomadas del .env ---
       SPRING_SECURITY_USER_NAME: admin
       SPRING_SECURITY_USER_PASSWORD: admin123
@@ -28,6 +28,7 @@ services:
     depends_on:
       - db
       - minio # Añadida dependencia de MinIO
+    entrypoint: ["sh","-c","until nc -z db 5432; do echo waiting for db; sleep 1; done; exec java -jar /app/app.jar"]
 
   db:
     image: postgres:16-alpine
