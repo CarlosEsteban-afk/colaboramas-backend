@@ -13,4 +13,5 @@ public class CreateEventRequest {
     private String ubication;
     private String description;
     private Long userId; // ID del usuario que crea el evento (opcional)
+    private String imageUrl; // <-- nuevo campo para la URL de la imagen
 }

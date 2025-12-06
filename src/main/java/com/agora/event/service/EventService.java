@@ -34,6 +34,7 @@ public class EventService {
                 .date(request.getDate())
                 .ubication(request.getUbication())
                 .description(request.getDescription())
+                .imageUrl(request.getImageUrl()) // <-- asignar la imagen
                 .user(user)
                 .build();
 
