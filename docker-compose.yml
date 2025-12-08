@@ -1,33 +1,33 @@
 version: '3.8'
 
 services:
-  api-service:
-    build: .
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./.env:/app/.env
-    environment:
-      SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/colabora
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: pass
-      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
-      # Actualizado para que la API se comunique con MinIO dentro de la red de Docker
-      MINIO_ENDPOINT: http://minio:9000 
-      MINIO_ACCESS-KEY: minioadmin
-      MINIO_SECRET-KEY: minioadmin
-    depends_on:
-      - db
-      - minio # Añadida dependencia de MinIO
+  # api-service:
+  #   build: .
+  #   ports:
+  #     - "8080:8080"
+  #   volumes:
+  #     - ./.env:/app/.env
+  #   environment:
+  #     SPRING_PROFILES_ACTIVE: prod
+  #     SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres-db
+  #     SPRING_DATASOURCE_USERNAME: dbusr
+  #     SPRING_DATASOURCE_PASSWORD: dbpass
+  #     SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+  #     # Actualizado para que la API se comunique con MinIO dentro de la red de Docker
+  #     MINIO_ENDPOINT: http://minio:9000 
+  #     MINIO_ACCESS-KEY: minioadmin
+  #     MINIO_SECRET-KEY: minioadmin
+  #   depends_on:
+  #     - db
+  #     - minio # Añadida dependencia de MinIO
 
   db:
     image: postgres:16-alpine
     container_name: colabora-db
     environment:
-      POSTGRES_DB: colabora
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: postgres-db
+      POSTGRES_USER: dbusr
+      POSTGRES_PASSWORD: dbpass
     ports:
       - "5432:5432"
     volumes:
@@ -42,7 +42,7 @@ services:
       - "9001:9001" # Puerto de la consola de MinIO
     environment:
       MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_PASSWORD: miniopass
     volumes:
       - miniodata:/data
     command: server /data --console-address ":9001"
