@@ -37,6 +37,8 @@ public class ProfileService implements IProfileService {
 
         user.setPais(request.getPais());
         user.setCiudad(request.getCiudad());
+        user.setLatitud(request.getLatitud());
+        user.setLongitud(request.getLongitud());
         // Actualizar historial educativo
         if (request.getHistorialEducativo() != null) {
             user.getHistorialEducativo().clear();
@@ -97,6 +99,8 @@ public class ProfileService implements IProfileService {
         dto.setProyectosRecientes(user.getProyectosRecientes());
         dto.setPais(user.getPais());
         dto.setCiudad(user.getCiudad());
+        dto.setLatitud(user.getLatitud());
+        dto.setLongitud(user.getLongitud());
 
         dto.setHistorialEducativo(user.getHistorialEducativo().stream()
                 .map(this::toEducacionDto)

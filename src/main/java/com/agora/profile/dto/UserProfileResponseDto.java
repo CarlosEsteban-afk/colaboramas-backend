@@ -12,6 +12,8 @@ public class UserProfileResponseDto {
     private List<KeywordDto> keywords;
     private String pais;
     private String ciudad;
+    private Double latitud;
+    private Double longitud;
     private String motivaciones;
     private String actividadesPersonales;
     private String proyectosRecientes;
