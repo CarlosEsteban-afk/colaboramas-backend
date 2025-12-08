@@ -7,6 +7,9 @@ import com.agora.profile.model.Educacion;
 import com.agora.tag.model.Keyword;
 import com.agora.tag.model.KeywordType;
 import com.agora.tag.repository.KeywordRepository;
+import com.agora.event.model.Event;
+import com.agora.event.model.EventType;
+import com.agora.event.repository.EventRepository;
 import com.agora.user.repository.RoleRepository;
 import com.agora.user.repository.UserRepository;
 import com.agora.auth.model.Role;
@@ -31,7 +34,8 @@ public class DataInitializer {
             UserRepository userRepository,
             RoleRepository roleRepository,
             PermissionRepository permissionRepository,
-            KeywordRepository keywordRepository
+            KeywordRepository keywordRepository,
+            EventRepository eventRepository
     ) {
         return args -> {
             // --- 1. Creación de Permisos y Roles ---
@@ -56,6 +60,12 @@ public class DataInitializer {
                             .permissionEntities(allPermissions)
                             .build()));
 
+            Role adminRole = roleRepository.findByRoleName(RoleEnum.ADMIN)
+                    .orElseGet(() -> roleRepository.save(Role.builder()
+                            .roleName(RoleEnum.ADMIN)
+                            .permissionEntities(allPermissions)
+                            .build()));
+
             // --- 2. Creación de Keywords Maestras (solo nombres) ---
             List<String> keywordNames = List.of(
                     "Inteligencia Artificial", "Machine Learning", "Biología Molecular",
@@ -69,6 +79,25 @@ public class DataInitializer {
 
             // --- 3. Creación de Usuarios de Prueba ---
             var encoder = new BCryptPasswordEncoder();
+
+            // Usuario Admin: Administrador del Sistema
+            if (userRepository.findByEmail("admin@agora.com").isEmpty()) {
+                User admin = User.builder()
+                        .username("Administrador")
+                        .email("admin@agora.com")
+                        .imageUrl("https://cdn-icons-png.flaticon.com/512/1177/1177568.png")
+                        .password(encoder.encode("Admin123!"))
+                        .roles(Set.of(adminRole))
+                        .pais("Argentina").ciudad("Buenos Aires")
+                        .latitud(-34.6037).longitud(-58.3816)
+                        .motivaciones("Gestión y administración de la plataforma Ágora.")
+                        .accountNoExpired(true).accountNoLocked(true).credentialNoExpired(true).isEnabled(true)
+                        .build();
+
+                admin.addEducacion(Educacion.builder().institucion("Sistema").titulo("Administrador").build());
+                userRepository.save(admin);
+                System.out.println("✅ Usuario ADMIN creado: admin@agora.com / Admin123!");
+            }
 
             // Usuario 1: Ana Gómez
             if (userRepository.findByEmail("ana.gomez@email.com").isEmpty()) {
@@ -452,6 +481,82 @@ public class DataInitializer {
                 addKeywordsToUser(ricardo, keywordRepository, KeywordType.LINEA_INTERES, "Educación");
                 userRepository.save(ricardo);
             }
+
+            // --- 4. Eventos de ejemplo ---
+            if (eventRepository.count() == 0) {
+                var anaOpt = userRepository.findByEmail("ana.gomez@email.com");
+                var carlosOpt = userRepository.findByEmail("carlos.ruiz@email.com");
+                var sofiaOpt = userRepository.findByEmail("sofia.torres@email.com");
+
+                Event ev1 = Event.builder()
+                        .title("Charla: IA y Sociedad")
+                        .type(EventType.CHARLA)
+                        .date(java.time.LocalDateTime.now().plusDays(10))
+                        .ubication("Auditorio Central")
+                        .description("Una charla sobre los impactos sociales y éticos de la Inteligencia Artificial.")
+                        .imageUrl("https://images.unsplash.com/photo-1529333166437-7750a6dd5a70")
+                        .user(anaOpt.orElse(null))
+                        .isEnabled(true)
+                        .build();
+                eventRepository.save(ev1);
+
+                Event ev2 = Event.builder()
+                        .title("Congreso de Biología Molecular")
+                        .type(EventType.CONGRESO)
+                        .date(java.time.LocalDateTime.now().plusDays(30))
+                        .ubication("Centro de Convenciones")
+                        .description("Congreso internacional sobre avances en biología molecular.")
+                        .imageUrl("https://images.unsplash.com/photo-1522199710521-72d69614c702?auto=format&fit=crop&w=800&q=80")
+                        .user(carlosOpt.orElse(null))
+                        .isEnabled(true)
+                        .build();
+                eventRepository.save(ev2);
+
+                Event ev3 = Event.builder()
+                        .title("Festival de Divulgación Científica")
+                        .type(EventType.CONCURSO)
+                        .date(java.time.LocalDateTime.now().plusDays(20))
+                        .ubication("Plaza Central")
+                        .description("Actividades y stands para acercar la ciencia a la comunidad.")
+                        .imageUrl("https://images.unsplash.com/photo-1503387762-592deb58ef4e")
+                        .user(sofiaOpt.orElse(null))
+                        .isEnabled(true)
+                        .build();
+                eventRepository.save(ev3);
+            }
+
+                        // Asegurarse de que todos los eventos tengan una imageUrl (usar placeholder por tipo si falta)
+                        var allEvents = eventRepository.findAll();
+                        boolean changed = false;
+                        for (Event e : allEvents) {
+                                // Force-replace the image for the seeded 'Congreso de Biología Molecular' (evento 2)
+                                if ("Congreso de Biología Molecular".equals(e.getTitle())) {
+                                        String newImg = "https://images.unsplash.com/photo-1522199710521-72d69614c702?auto=format&fit=crop&w=800&q=80";
+                                        if (!newImg.equals(e.getImageUrl())) {
+                                                e.setImageUrl(newImg);
+                                                changed = true;
+                                        }
+                                        continue; // we updated or ensured this one
+                                }
+
+                                if (e.getImageUrl() == null || e.getImageUrl().isBlank()) {
+                                        String defaultImg;
+                                        if (e.getType() == EventType.CHARLA) {
+                                                defaultImg = "https://images.unsplash.com/photo-1509062522246-3755977927d7";
+                                        } else if (e.getType() == EventType.CONGRESO) {
+                                                defaultImg = "https://images.unsplash.com/photo-1517430816045-df4b7de11d1d";
+                                        } else if (e.getType() == EventType.CONCURSO) {
+                                                defaultImg = "https://images.unsplash.com/photo-1526312426976-3d4e0aa5b0c9";
+                                        } else {
+                                                defaultImg = "https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d";
+                                        }
+                                        e.setImageUrl(defaultImg);
+                                        changed = true;
+                                }
+                        }
+                        if (changed) {
+                                eventRepository.saveAll(allEvents);
+                        }
         };
     }
 

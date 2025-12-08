@@ -1,6 +1,7 @@
 package com.agora.auth.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import java.util.HashSet;
@@ -25,6 +26,7 @@ public class PermissionEntity {
 
     @ManyToMany(mappedBy = "permissionEntities", fetch = FetchType.EAGER)
     @Builder.Default
+    @JsonBackReference(value = "role-permissions")
     private Set<Role> roleEntities = new HashSet<>();
 
 }

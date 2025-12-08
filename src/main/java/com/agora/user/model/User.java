@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Setter
 @Getter
@@ -52,6 +53,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @JsonManagedReference(value = "user-keywords")
     private Set<UserKeyword> keywords = new HashSet<>();
 
     @Column(columnDefinition = "TEXT")

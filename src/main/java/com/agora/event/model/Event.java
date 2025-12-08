@@ -1,49 +1,46 @@
 package com.agora.event.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.agora.user.model.User;
+import jakarta.persistence.*;
+import lombok.*;
 
+import java.time.LocalDateTime;
+
+@Setter
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "events")
 public class Event {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+
+    @Column(nullable = false)
+    private String title;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EventType type;
+
+    @Column(nullable = false)
+    private LocalDateTime date;
+
+    @Column(nullable = false)
+    private String ubication;
+
+    @Lob // Para textos largos
     private String description;
 
-    public Event() {
-    }
-
-    public Event(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    @Column(name = "image_url")
+    private String imageUrl;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = true) // nullable=true hace que la relación sea opcional
+    private User user;
+    
+ @Column(name = "is_enabled")
+    private Boolean isEnabled;
 }
