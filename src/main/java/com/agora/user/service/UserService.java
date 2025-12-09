@@ -4,6 +4,7 @@ import com.agora.auth.model.Role;
 import com.agora.auth.model.RoleEnum;
 import com.agora.user.dto.UpdateLocationRequest;
 import com.agora.user.dto.UserCardDTO;
+import com.agora.user.dto.UpdateProfileRequest;
 import com.agora.user.repository.RoleRepository;
 import com.agora.user.repository.UserRepository;
 import org.springframework.security.core.Authentication;
@@ -119,6 +120,33 @@ public class UserService {
         User user = optionalUser.get();
         user.setImageUrl(imageUrl);
         return userRepository.save(user);
+    }
+    @Transactional
+    public User updateUser(UpdateProfileRequest request) {
+
+        User currentUser = getCurrentUser();
+        if (request.getUsername() != null) {
+            currentUser.setUsername(request.getUsername());
+        }
+        if (request.getEmail() != null) {
+            currentUser.setEmail(request.getEmail());
+        }
+        if (request.getCiudad() != null) {
+            currentUser.setCiudad(request.getCiudad());
+        }
+        if (request.getPais() != null) {
+            currentUser.setPais(request.getPais());
+        }
+        if (request.getMotivaciones() != null) {
+            currentUser.setMotivaciones(String.join("\n", request.getMotivaciones()));
+        }
+        if (request.getActividadesPersonales() != null) {
+            currentUser.setActividadesPersonales(String.join("\n", request.getActividadesPersonales()));
+        }
+        if (request.getProyectosRecientes() != null) {
+            currentUser.setProyectosRecientes(String.join("\n", request.getProyectosRecientes()));
+        }
+        return userRepository.save(currentUser);
     }
     @Transactional
     public void reportUser(Long userId) {

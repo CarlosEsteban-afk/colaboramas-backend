@@ -2,6 +2,7 @@ package com.agora.user.controller;
 
 import com.agora.user.dto.CompleteProfileDTO;
 import com.agora.user.dto.CreateUserRequest;
+import com.agora.user.dto.UpdateProfileRequest;
 import com.agora.user.dto.UserCardDTO;
 import com.agora.user.dto.UserDTO;
 import com.agora.user.model.User;
@@ -56,6 +57,11 @@ public class UserController {
                 request.roles()
         );
         return new UserDTO(user.getId(), user.getUsername());
+    }
+    @PutMapping("/update")
+    public ResponseEntity<User> updateProfile(@RequestBody UpdateProfileRequest request) {
+        User updated = userService.updateUser(request);
+        return ResponseEntity.ok(updated);
     }
 
     /* @PutMapping("/{userId}/complete-profile")
