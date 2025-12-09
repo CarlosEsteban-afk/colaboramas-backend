@@ -5,6 +5,7 @@ import com.agora.admin.model.CountryCount;
 import com.agora.admin.repository.AdminStatsRepository;
 import com.agora.admin.repository.CountryCountRepository;
 import com.agora.auth.model.RoleEnum;
+import com.agora.user.model.User;
 import com.agora.user.repository.UserRepository;
 import com.agora.user.repository.RoleRepository;
 import com.agora.event.repository.EventRepository;
@@ -127,6 +128,16 @@ public class AdminService {
         return userRepository.save(user);
     }
 
+    @Transactional
+    public User resetReports(Long id) {
+        User u = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        u.setReportCount(0);
+        u.setIsEnabled(true);
+
+        return userRepository.save(u);
+    }
     @Transactional
     public com.agora.user.model.User changeUserRole(Long id, RoleEnum targetRole) {
         com.agora.user.model.User user = userRepository.findById(id)

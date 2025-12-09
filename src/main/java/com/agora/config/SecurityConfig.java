@@ -51,11 +51,17 @@ public class SecurityConfig {
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(http -> {
+                    http.requestMatchers("/auth/me").authenticated();
                     // Endpoints públicos (sin autenticación requerida)
-                    http.requestMatchers("/auth/**").permitAll();
+                    http.requestMatchers(
+                            "/auth/login",
+                            "/auth/register",
+                            "/auth/validate-token"
+                    ).permitAll();
                     http.requestMatchers("/events/**").permitAll();
                     http.requestMatchers(SWAGGER_UI_PATHS).permitAll();
                     http.requestMatchers("/error").permitAll();
+                    http.requestMatchers(HttpMethod.PUT, "/users/update").authenticated();
                     // Los endpoints de admin requieren autenticación y se validan con @PreAuthorize
                     http.requestMatchers("/admin/**").authenticated();
                     http.anyRequest().authenticated();

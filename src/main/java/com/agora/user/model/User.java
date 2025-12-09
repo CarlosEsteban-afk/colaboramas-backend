@@ -82,6 +82,10 @@ public class User {
     @Column()
     private Double longitud;
 
+    @Column(name = "report_count", nullable = false)
+    @Builder.Default
+    private Integer reportCount = 0;
+
     public void addEducacion(Educacion educacion) {
         if (this.historialEducativo == null) {
             this.historialEducativo = new HashSet<>();

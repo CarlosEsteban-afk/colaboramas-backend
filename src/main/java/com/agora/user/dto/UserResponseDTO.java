@@ -25,7 +25,7 @@ public class UserResponseDTO {
     private String actividadesPersonales;
     private String proyectosRecientes;
     private Set<String> roles;
-
+    private Integer reportCount;
 
 
     public static UserResponseDTO fromEntity(User user) {
@@ -42,6 +42,7 @@ public class UserResponseDTO {
                 .roles(user.getRoles().stream()
                         .map(role -> role.getRoleName().name())
                         .collect(Collectors.toSet()))
+                .reportCount(user.getReportCount())
                 .build();
     }
 }
