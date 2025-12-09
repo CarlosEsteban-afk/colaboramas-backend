@@ -115,7 +115,12 @@ public class AdminController {
         User u = adminService.banUser(id, enabled);
         return ResponseEntity.ok(u);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/users/{id}/resetReports")
+    public ResponseEntity<User> resetReports(@PathVariable Long id) {
+        User u = adminService.resetReports(id);
+        return ResponseEntity.ok(u);
+    }
     // ==================== EVENT MANAGEMENT ENDPOINTS ====================
     
     // GET /admin/events - Get all events

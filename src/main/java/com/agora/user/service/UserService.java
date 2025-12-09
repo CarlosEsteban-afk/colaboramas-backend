@@ -120,6 +120,19 @@ public class UserService {
         user.setImageUrl(imageUrl);
         return userRepository.save(user);
     }
+    @Transactional
+    public void reportUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
+        int newCount = user.getReportCount() + 1;
+        user.setReportCount(newCount);
+
+        if (newCount >= 5) {
+            user.setIsEnabled(false);
+        }
+
+        userRepository.save(user);
+    }
 
 }

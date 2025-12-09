@@ -72,6 +72,17 @@ public class UserController {
         return userService.getAllUserCards();
     }
 
+    @PostMapping("/{userId}/report")
+    public ResponseEntity<String> reportUser(@PathVariable Long userId, Authentication authentication) {
+        try {
+            userService.reportUser(userId);
+            return ResponseEntity.ok("Report received");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error reporting user");
+        }
+    }
     @DeleteMapping("/{userId}")
     @PreAuthorize("@userService.findUserById(#userId).username == authentication.name")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
