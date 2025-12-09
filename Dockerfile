@@ -14,6 +14,9 @@ RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:21-jdk-alpine
 
+# Install netcat so the container can wait for DB port availability
+RUN apk add --no-cache netcat-openbsd
+
 RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
 

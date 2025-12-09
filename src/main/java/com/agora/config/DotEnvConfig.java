@@ -1,0 +1,20 @@
+package com.agora.config;
+
+import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class DotEnvConfig {
+
+    static {
+        Dotenv dotenv = Dotenv.configure()
+            .directory(".")
+            .ignoreIfMissing()
+            .load();
+
+        // Load all variables from .env into system properties
+        dotenv.entries().forEach(entry ->
+                System.setProperty(entry.getKey(), entry.getValue())
+        );
+    }
+}

@@ -16,4 +16,5 @@ public class UserCardDTO {
     private String motivaciones;
     private String actividadesPersonales;
     private String proyectosRecientes;
+    private Integer reportCount;
 }

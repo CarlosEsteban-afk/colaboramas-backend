@@ -1,6 +1,8 @@
 package com.agora.auth.model;
 
 import com.agora.user.model.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,9 +32,11 @@ public class Role {
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id"))
     @Builder.Default
-    private Set<PermissionEntity> permissionEntities = new HashSet<>();
+        @JsonManagedReference(value = "role-permissions")
+        private Set<PermissionEntity> permissionEntities = new HashSet<>();
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
     @Builder.Default
+    @JsonBackReference(value = "user-roles")
     private Set<User> users = new HashSet<>();
 }
