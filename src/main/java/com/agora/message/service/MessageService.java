@@ -7,21 +7,26 @@ import com.agora.message.repository.MessageRepository;
 import com.agora.user.dto.UserSummaryDTO;
 import com.agora.user.model.User;
 import com.agora.user.repository.UserRepository;
+import com.agora.notification.service.PushNotificationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class MessageService {
+    private static final Logger logger = LoggerFactory.getLogger(MessageService.class);
 
     private final MessageRepository repo;
     private final UserRepository userRepository;
     private final EmailService emailService;
-   // private final SimpMessagingTemplate messagingTemplate; // 🔹 WebSocket
+    private final PushNotificationService pushNotificationService;
 
     public MessageResponseDto sendMessage(MessageRequestDto dto) {
         // Guardar mensaje en BD
@@ -42,8 +47,15 @@ public class MessageService {
         // Crear DTO para respuesta
         MessageResponseDto response = toResponseDto(saved);
 
-        // 🔹 Notificación WebSocket al destinatario
-       // messagingTemplate.convertAndSend("/topic/messages/" + dto.getToUserId(), response);
+        // 🔹 Enviar notificación push al destinatario
+        User senderUser = userRepository.findById(dto.getFromUserId()).orElse(null);
+        String senderName = senderUser != null ? senderUser.getUsername() : "Someone";
+        pushNotificationService.sendNotificationToUser(
+            dto.getToUserId(),
+            "Nuevo mensaje de " + senderName,
+            dto.getSubject()
+        );
+        logger.info("📱 Push notification sent to user: {} about new message", dto.getToUserId());
 
         return response;
     }
@@ -73,6 +85,18 @@ public class MessageService {
 
         // 🔹 Opcional: enviar notificación en tiempo real del cambio de estado
        // messagingTemplate.convertAndSend("/topic/messages/" + saved.getToUserId(), toResponseDto(saved));
+       if ("accepted".equals(status)) {
+        User responder = userRepository.findById(saved.getToUserId()).orElse(null);
+        String responderName = responder != null ? responder.getUsername() : "A user";
+
+
+        pushNotificationService.sendNotificationToUser(
+            saved.getFromUserId(), // Notify the original sender
+            "Conexión aceptada!",
+            responderName + " aceptó tu solicitud."
+        );
+        logger.info("📱 Acceptance notification sent to user: {}", saved.getFromUserId());
+    }
 
         return toResponseDto(saved);
     }
