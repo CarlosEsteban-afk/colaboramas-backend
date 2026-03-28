@@ -1,0 +1,39 @@
+services:
+  api-service:
+    build: .
+    ports:
+      - "8080:8080"
+    env_file: 
+      - ./.env
+    volumes:
+      - ./serviceAccountKey.json:/app/serviceAccountKey.json:ro
+    depends_on:
+      - db
+      - minio
+
+  db:
+    image: postgres:16-alpine
+    container_name: colabora-db
+    env_file:
+      - ./.env.db 
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # Nuevo servicio para MinIO
+  minio:
+    image: quay.io/minio/minio
+    container_name: colabora-minio
+    ports:
+      - "9000:9000" # Puerto de la API de MinIO
+      - "9001:9001" # Puerto de la consola de MinIO
+    env_file:
+      - ./.env.minio
+    volumes:
+      - miniodata:/data
+    command: server /data --console-address ":9001"
+
+volumes:
+  pgdata:
+  miniodata:
